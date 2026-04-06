@@ -38,10 +38,19 @@ export async function apiRequest<T>(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(buildUrl(path), {
-    ...options,
-    headers,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(buildUrl(path), {
+      ...options,
+      headers,
+    });
+  } catch {
+    throw new ApiError(
+      'Unable to reach the API. For mobile testing, confirm EXPO_PUBLIC_API_URL points to a reachable host.',
+      0,
+    );
+  }
 
   const contentType = response.headers.get('content-type') ?? '';
   const data = contentType.includes('application/json')

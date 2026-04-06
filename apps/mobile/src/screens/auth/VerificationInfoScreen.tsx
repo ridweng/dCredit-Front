@@ -21,7 +21,7 @@ export function VerificationInfoScreen({ route, navigation }: Props) {
         <Text style={styles.help}>
           {t('messages.verificationResent')}
           {'\n\n'}
-          Mobile note: the verification link currently opens the web route. Native deep linking can be added later once device routing is finalized.
+          {t('auth.verify.mobileInfo')}
         </Text>
       </View>
 

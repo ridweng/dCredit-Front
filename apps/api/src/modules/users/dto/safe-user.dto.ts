@@ -5,6 +5,7 @@ export class SafeUserDto {
   email!: string;
   fullName!: string;
   emailVerified!: boolean;
+  isAdmin!: boolean;
   preferredLanguage!: PreferredLanguage;
   createdAt!: Date;
   updatedAt!: Date;

@@ -11,6 +11,7 @@ interface CreateUserInput {
   passwordHash: string;
   fullName: string;
   preferredLanguage: PreferredLanguage;
+  isAdmin?: boolean;
 }
 
 interface CreateVerificationTokenInput {
@@ -46,6 +47,7 @@ export class UsersService {
       passwordHash: input.passwordHash,
       fullName: input.fullName.trim(),
       emailVerified: false,
+      isAdmin: input.isAdmin ?? false,
       preferredLanguage: input.preferredLanguage,
     });
 
@@ -123,6 +125,7 @@ export class UsersService {
       email: user.email,
       fullName: user.fullName,
       emailVerified: user.emailVerified,
+      isAdmin: user.isAdmin,
       preferredLanguage: user.preferredLanguage,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

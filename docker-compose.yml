@@ -8,13 +8,12 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: dcredit
-      POSTGRES_USER: admn
-      POSTGRES_PASSWORD: passAd1mFr4us
+      POSTGRES_USER: dcredit
+      POSTGRES_PASSWORD: dcredit_dev_password
     ports:
       - '5433:5432'
     volumes:
       - ./data/db:/var/lib/postgresql/data
-      - ./apps/api/db/init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U dcredit -d dcredit']
       interval: 10s
@@ -59,9 +58,9 @@ services:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_NAME: dcredit
-      DATABASE_USER: admn
-      DATABASE_PASSWORD: passAd1mFr4us
-      DATABASE_URL: postgresql://admn:passAd1mFr4us@postgres:5432/dcredit
+      DATABASE_USER: dcredit
+      DATABASE_PASSWORD: dcredit_dev_password
+      DATABASE_URL: postgresql://dcredit:dcredit_dev_password@postgres:5432/dcredit
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       MAIL_FROM: noreply@dcredit.local
@@ -94,7 +93,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
-volumes:
-  postgres_data:
-    name: dcredit_postgres_data

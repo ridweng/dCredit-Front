@@ -22,6 +22,9 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   emailVerified!: boolean;
 
+  @Column({ type: 'boolean', default: false })
+  isAdmin!: boolean;
+
   @Column({
     type: 'enum',
     enum: PreferredLanguage,

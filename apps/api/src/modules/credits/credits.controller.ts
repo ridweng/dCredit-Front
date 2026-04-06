@@ -1,9 +1,12 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthenticatedRequestUser } from '../auth/types/authenticated-request-user.type';
 import { CreditsService } from './credits.service';
 
+@ApiTags('credits')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('credits')
 export class CreditsController {

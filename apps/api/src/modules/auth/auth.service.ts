@@ -76,6 +76,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       emailVerified: user.emailVerified,
+      isAdmin: user.isAdmin,
     });
 
     return {

@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthenticatedRequestUser } from '../auth/types/authenticated-request-user.type';
@@ -6,6 +7,8 @@ import { CreateFinancialSourceDto } from './dto/create-financial-source.dto';
 import { UpdateFinancialSourceDto } from './dto/update-financial-source.dto';
 import { FinancialSourcesService } from './financial-sources.service';
 
+@ApiTags('financial-sources')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('financial-sources')
 export class FinancialSourcesController {

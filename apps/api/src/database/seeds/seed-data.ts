@@ -15,6 +15,15 @@ export const demoVerifiedUserSeed = {
   preferredLanguage: PreferredLanguage.EN,
 };
 
+export const demoAdminUserSeed = {
+  email: 'admin@dcredit.local',
+  password: 'AdminAccess123!',
+  fullName: 'Morgan Ops',
+  emailVerified: true,
+  preferredLanguage: PreferredLanguage.EN,
+  isAdmin: true,
+};
+
 export const demoUnverifiedUserSeed = {
   email: 'pending@dcredit.local',
   password: 'VerifyMe123!',
@@ -23,10 +32,82 @@ export const demoUnverifiedUserSeed = {
   preferredLanguage: PreferredLanguage.ES,
 };
 
+export const activationJourneyUserSeeds = [
+  {
+    key: 'registered-only',
+    email: 'registered.only@dcredit.local',
+    password: 'ChangeMe123!',
+    fullName: 'Taylor Registered',
+    emailVerified: false,
+    preferredLanguage: PreferredLanguage.EN,
+    stage: 'registered',
+  },
+  {
+    key: 'verified-only',
+    email: 'verified.only@dcredit.local',
+    password: 'ChangeMe123!',
+    fullName: 'Riley Verified',
+    emailVerified: true,
+    preferredLanguage: PreferredLanguage.EN,
+    stage: 'email_verified',
+  },
+  {
+    key: 'source-connected',
+    email: 'source.connected@dcredit.local',
+    password: 'ChangeMe123!',
+    fullName: 'Jordan Source',
+    emailVerified: true,
+    preferredLanguage: PreferredLanguage.ES,
+    stage: 'source_connected',
+  },
+  {
+    key: 'account-ready',
+    email: 'account.ready@dcredit.local',
+    password: 'ChangeMe123!',
+    fullName: 'Casey Account',
+    emailVerified: true,
+    preferredLanguage: PreferredLanguage.EN,
+    stage: 'account_ready',
+  },
+  {
+    key: 'transaction-ready',
+    email: 'transaction.ready@dcredit.local',
+    password: 'ChangeMe123!',
+    fullName: 'Avery Spend',
+    emailVerified: true,
+    preferredLanguage: PreferredLanguage.ES,
+    stage: 'transaction_ready',
+  },
+  {
+    key: 'credit-ready',
+    email: 'credit.ready@dcredit.local',
+    password: 'ChangeMe123!',
+    fullName: 'Skyler Credit',
+    emailVerified: true,
+    preferredLanguage: PreferredLanguage.EN,
+    stage: 'credit_ready',
+  },
+] as const;
+
 export const demoUnverifiedVerificationTokenSeed = {
   token: 'demo-unverified-verification-token',
   expiresAt: new Date('2026-12-31T23:59:59.000Z'),
 };
+
+export const demoVerificationHistorySeeds = [
+  {
+    email: 'demo@dcredit.local',
+    token: 'demo-verified-history-token',
+    expiresAt: new Date('2026-02-20T12:00:00.000Z'),
+    usedAt: new Date('2026-02-18T09:30:00.000Z'),
+  },
+  {
+    email: 'admin@dcredit.local',
+    token: 'demo-admin-history-token',
+    expiresAt: new Date('2026-03-05T12:00:00.000Z'),
+    usedAt: new Date('2026-03-03T16:45:00.000Z'),
+  },
+];
 
 export const demoFinancialSourcesSeed = [
   {

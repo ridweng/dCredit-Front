@@ -1,0 +1,145 @@
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class SchemaDocumentationService {
+  getSchemaReference() {
+    return {
+      overview: {
+        summary:
+          'The dCredit database centers on users, their verification lifecycle, connected financial sources, liquidity accounts, transactions, credit products, and installment schedules.',
+        relationships: [
+          'users -> verification_tokens, financial_sources, accounts, transactions, credits',
+          'financial_sources -> accounts, credits',
+          'accounts -> transactions',
+          'credits -> installments, transactions',
+          'categories -> transactions',
+        ],
+      },
+      tables: [
+        {
+          name: 'users',
+          purpose: 'Application identity, auth state, preferred language, and admin access.',
+          importantColumns: [
+            'id',
+            'email',
+            'passwordHash',
+            'fullName',
+            'emailVerified',
+            'isAdmin',
+            'preferredLanguage',
+            'createdAt',
+            'updatedAt',
+          ],
+          relations: [
+            '1:N verification_tokens',
+            '1:N financial_sources',
+            '1:N accounts',
+            '1:N transactions',
+            '1:N credits',
+          ],
+          notes: 'Users are the anchor for auth, activation analysis, dashboard data, and admin access.',
+        },
+        {
+          name: 'verification_tokens',
+          purpose: 'Email verification lifecycle with one-time token usage and expiry.',
+          importantColumns: ['id', 'userId', 'token', 'expiresAt', 'usedAt'],
+          relations: ['N:1 users'],
+          notes: 'Used for email verification and operational verification timing insights.',
+        },
+        {
+          name: 'financial_sources',
+          purpose: 'Connected institutions or imported sources with secure credential references.',
+          importantColumns: [
+            'id',
+            'userId',
+            'providerName',
+            'providerType',
+            'status',
+            'credentialReference',
+            'createdAt',
+            'updatedAt',
+          ],
+          relations: ['N:1 users', '1:N accounts', '1:N credits'],
+          notes: 'Credential references point to a vault placeholder, not plaintext credentials.',
+        },
+        {
+          name: 'accounts',
+          purpose: 'Liquid or card accounts used for balance and transaction visibility.',
+          importantColumns: [
+            'id',
+            'userId',
+            'financialSourceId',
+            'accountName',
+            'accountType',
+            'currency',
+            'currentBalance',
+            'availableBalance',
+          ],
+          relations: ['N:1 users', 'N:1 financial_sources', '1:N transactions'],
+          notes: 'Supports consolidated liquid balance and per-source liquidity breakdowns.',
+        },
+        {
+          name: 'transactions',
+          purpose: 'Normalized income, expense, and payment records for spending insights.',
+          importantColumns: [
+            'id',
+            'userId',
+            'accountId',
+            'creditId',
+            'categoryId',
+            'date',
+            'description',
+            'amount',
+            'type',
+            'merchant',
+            'createdAt',
+          ],
+          relations: ['N:1 users', 'N:1 accounts', 'N:1 credits', 'N:1 categories'],
+          notes: 'Used for weekly spending, category summaries, recent activity, and activation readiness.',
+        },
+        {
+          name: 'categories',
+          purpose: 'Lookup table for normalized transaction classification.',
+          importantColumns: ['id', 'key', 'name', 'type'],
+          relations: ['1:N transactions'],
+          notes: 'Keeps spending categories stable for charts and percentages.',
+        },
+        {
+          name: 'credits',
+          purpose: 'Credit products tracked for risk, monthly obligations, and payment planning.',
+          importantColumns: [
+            'id',
+            'userId',
+            'financialSourceId',
+            'name',
+            'creditType',
+            'originalAmount',
+            'outstandingBalance',
+            'interestRate',
+            'monthlyPayment',
+            'nextPaymentDate',
+            'deferredPaymentDate',
+          ],
+          relations: ['N:1 users', 'N:1 financial_sources', '1:N installments', '1:N transactions'],
+          notes: 'Supports high-interest alerts, upcoming payments, and credit timeline views.',
+        },
+        {
+          name: 'installments',
+          purpose: 'Future or historical payment schedule for loans and installment products.',
+          importantColumns: [
+            'id',
+            'creditId',
+            'installmentNumber',
+            'dueDate',
+            'amount',
+            'principalPortion',
+            'interestPortion',
+            'status',
+          ],
+          relations: ['N:1 credits'],
+          notes: 'Feeds the Gantt-like timeline in product experiences and internal credit review.',
+        },
+      ],
+    };
+  }
+}

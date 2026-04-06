@@ -1,398 +1,465 @@
 # dCredit
 
-> **Your debt, made clear.** — A bilingual (EN/ES) fintech app that helps salaried professionals understand their real monthly debt capacity.
+> Bilingual fintech MVP foundation built as a monorepo: NestJS API, React web, React Native mobile, PostgreSQL, and Mailpit.
 
----
+## Architecture
 
-## Monorepo Structure
+The repo is organized around three product apps and shared packages:
 
-```
-dCredit/
-├── apps/
-│   ├── api/          # NestJS backend API
-│   ├── web/          # Canonical React + Vite frontend connected to NestJS
-│   └── mobile/       # React Native + Expo mobile app
-├── packages/
-│   ├── types/        # Shared TypeScript domain types
-│   ├── core/         # Shared financial calculation logic (no UI deps)
-│   ├── i18n/         # Shared EN/ES translation dictionaries
-│   └── ui/           # Shared design tokens and style constants
-├── artifacts/        # Legacy prototypes and historical references
-├── docker-compose.yml
-├── .env.example
-└── README.md
+```text
+apps/
+  api/      NestJS + TypeORM backend
+  web/      Canonical React + Vite web app
+  mobile/   React Native + Expo mobile app
+packages/
+  core/     Shared financial logic
+  i18n/     Shared EN/ES translation layer
+  types/    Shared TypeScript types
+artifacts/  Historical prototypes and migration references
 ```
 
----
+Why the app is grouped into `Home`, `Credits`, `Spending`, `Sources`, and `Profile`:
+
+- `Home` concentrates top-level financial awareness: general balance, weekly movement, obligations, and next payment.
+- `Credits` isolates debt-product detail: rates, monthly payments, next dates, and installment timeline.
+- `Spending` focuses on grouped and classified outflows.
+- `Sources` is the setup and connection surface for banking/manual sources.
+- `Profile` holds identity, language preference, verification state, and logout.
+
+This grouping is shared conceptually across web and mobile so the product remains consistent across platforms.
 
 ## Stack
 
-| Layer      | Technology                  |
-|------------|-----------------------------|
-| API        | NestJS (TypeScript)         |
-| Database   | PostgreSQL 16               |
-| ORM        | TypeORM + migrations        |
-| Web        | React 19 + Vite             |
-| Mobile     | React Native + Expo         |
-| Email      | Mailpit (dev) / SMTP (prod) |
-| Containers | Docker Compose              |
-| Monorepo   | pnpm workspaces             |
+- Backend: NestJS
+- Web: React + TypeScript + Vite
+- Mobile: React Native + TypeScript + Expo
+- Database: PostgreSQL
+- ORM / schema workflow: TypeORM + committed migrations
+- Email verification inbox: Mailpit
+- Local infrastructure runtime: Docker Compose
+- Workspace management: pnpm
 
----
+## Shared Logic
 
-## Prerequisites
+Shared code is intentionally centralized:
 
-- [Node.js](https://nodejs.org/) v20+
-- [pnpm](https://pnpm.io/) v9+ — `npm install -g pnpm`
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for the local backend stack)
-- For mobile: [Expo Go](https://expo.dev/go) on your phone or an iOS/Android simulator
+- [`packages/core`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/core)
+  - financial calculations
+  - debt prioritization
+  - risk / recommendation helpers
+- [`packages/i18n`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/i18n)
+  - shared bilingual translation dictionaries
+  - reused by web and mobile
+- [`packages/types`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/types)
+  - shared domain-oriented TypeScript types
 
----
-
-## Initial Setup
+## Install
 
 ```bash
-# 1. Clone and install dependencies
-git clone <repo>
-cd dcredit
 pnpm install
+```
 
-# 2. Set up environment files
+There is also a pass-through script if you want it documented in the repo command surface:
+
+```bash
+pnpm install:deps
+```
+
+## Environment Setup
+
+Copy the example env files:
+
+```bash
 cp .env.example .env
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 cp apps/mobile/.env.example apps/mobile/.env
 ```
 
----
+Key local defaults:
 
-## Development
+- Postgres: `localhost:5433`
+- API: `http://localhost:3001`
+- Web: `http://localhost:5173`
+- Mailpit UI: `http://localhost:8025`
+- Mailpit SMTP: `localhost:1025`
 
-### Start the Docker backend stack
+## Core Commands
+
+Infrastructure:
 
 ```bash
-# Starts: PostgreSQL, NestJS API, Mailpit
-pnpm docker:up
-
-# Stop all containers
-pnpm docker:down
+docker compose up -d
+docker compose down
 ```
 
-To inspect running services:
+Repo shortcuts:
 
 ```bash
+pnpm docker:up
+pnpm docker:down
 pnpm docker:logs
 ```
 
-### Start individual apps
+App development:
 
 ```bash
-# NestJS API (http://localhost:3001/api)
 pnpm dev:api
-
-# React web app (http://localhost:5173)
 pnpm dev:web
-
-# React Native mobile app (Expo)
 pnpm dev:mobile
 ```
 
-### Database workflow
+Database workflow:
 
 ```bash
-# Run committed migrations against the configured DATABASE_URL
-pnpm migration:run
-
-# Revert the latest migration
-pnpm migration:revert
-
-# Generate a new migration from entity changes
 pnpm migration:generate --name=DescribeChange
-
-# Seed deterministic demo data
+pnpm migration:run
+pnpm migration:revert
 pnpm seed
-
-# Drop the local schema, rerun migrations, and reseed
 pnpm db:reset
 ```
 
----
-
-## Service URLs
-
-| Service      | URL                          | Description                      |
-|--------------|------------------------------|----------------------------------|
-| NestJS API   | http://localhost:3001/api    | REST API (health: /api/health)   |
-| Web app      | http://localhost:5173        | React frontend                   |
-| Mailpit UI   | http://localhost:8025        | View outgoing emails in dev      |
-| Mailpit SMTP | localhost:1025               | SMTP catch-all (dev only)        |
-| PostgreSQL   | localhost:5433               | DB: `dcredit`, user: `dcredit`   |
-
----
-
-## Package Architecture
-
-### `packages/types`
-Canonical TypeScript interfaces for the dCredit domain — `User`, `DebtProduct`, `FinancialProfile`, `SimulatorResult`, etc. No runtime dependencies; used by all apps.
-
-### `packages/core`
-Pure financial logic with zero UI or framework dependencies:
-- `financialCalculations.ts` — FCF, debt burden, amortization, safe capacity
-- `recommendationEngine.ts` — risk assessment, debt prioritization, loan simulation
-- `debtHealthScore.ts` — 0–100 health score based on burden, FCF, and trend
-
-### `packages/i18n`
-EN/ES translation dictionaries with a framework-agnostic `t(locale, key)` helper.
-
-### `packages/ui`
-Design tokens (colors, spacing, typography, border radii) shared between web and mobile.
-
----
-
-## Database
-
-PostgreSQL runs via Docker. The `dcredit` database is created automatically on first start, and schema changes are applied through committed TypeORM migrations.
-
-Inspect the Postgres connection details:
+Verification:
 
 ```bash
-# Open a psql shell in the running container
-docker compose exec postgres psql -U dcredit -d dcredit
-
-# Print connection settings from the API env example
-cat apps/api/.env.example
+pnpm typecheck
+pnpm verify
 ```
 
-Connection defaults:
-- Host: `localhost`
-- Port: `5433`
-- Database: `dcredit`
-- User: `dcredit`
-- Password: `dcredit_dev_password`
-- URL: `postgresql://dcredit:dcredit_dev_password@localhost:5433/dcredit`
+## Docker Compose Flow
 
----
+Docker Compose is the local runtime for:
 
-## Email (Mailpit)
+- PostgreSQL
+- NestJS API
+- Mailpit
 
-In development, all outgoing emails are caught by Mailpit — nothing is sent externally.
+The Compose stack is defined in [`docker-compose.yml`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/docker-compose.yml).
 
-- **SMTP**: `localhost:1025` (configured automatically via `docker-compose.yml`)
-- **Web UI**: [http://localhost:8025](http://localhost:8025)
-- Open Mailpit after `pnpm docker:up` to inspect verification emails generated by `POST /api/auth/register` or `POST /api/auth/resend-verification`
+Expected startup flow:
 
-In production, set real SMTP credentials in `apps/api/.env`.
+1. `docker compose up -d`
+2. Postgres becomes healthy on `5433`
+3. Mailpit becomes healthy on `1025/8025`
+4. API starts on `3001` and connects to Postgres + Mailpit
 
----
+Useful checks:
 
-## Canonical Web App
+```bash
+docker compose ps
+docker compose logs -f api
+docker compose logs -f postgres
+docker compose logs -f mailpit
+```
 
-`apps/web` is now the single maintained React frontend.
+## Mailpit
 
-- Run it with `pnpm dev:web`
-- Configure the API origin with `apps/web/.env`
-- Default local API origin: `http://localhost:3001`
-- When `VITE_API_URL` is omitted, the Vite dev server proxies `/api` to the local Nest API
+Mailpit is the local verification email solution.
 
-The artifact frontends under `artifacts/` remain in git history as migration sources only and are no longer the active web target.
+- SMTP target used by the API: `localhost:1025`
+- Web inbox: `http://localhost:8025`
+
+To inspect verification emails:
+
+1. Register a user from the web or mobile flow
+2. Open `http://localhost:8025`
+3. Open the latest message
+4. Follow the verification link or copy the token
+
+## Database and Migrations
+
+Schema changes are migration-first.
+
+Typical workflow:
+
+1. Update TypeORM entities in [`apps/api/src`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api/src)
+2. Generate a migration:
+
+```bash
+pnpm migration:generate --name=AddSomething
+```
+
+3. Review the generated file in [`apps/api/src/database/migrations`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api/src/database/migrations)
+4. Apply it:
+
+```bash
+pnpm migration:run
+```
+
+5. If needed, revert the latest migration:
+
+```bash
+pnpm migration:revert
+```
+
+## Demo Data / Seeding
+
+Seed scripts create deterministic demo data for the MVP:
+
+- verified and unverified auth users
+- financial sources
+- accounts
+- transactions
+- credits
+- installments
+
+Run:
+
+```bash
+pnpm seed
+```
+
+Reset local DB state completely:
+
+```bash
+pnpm db:reset
+```
+
+## Backend
+
+The backend remains NestJS throughout the project.
+
+API location:
+
+- [`apps/api`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api)
+
+Main responsibilities already covered:
+
+- authentication
+- JWT-based session flow
+- email verification via Mailpit
+- dashboard aggregation
+- credit views and timelines
+- spending summaries
+- financial source management
+- lightweight internal admin / ops dashboard
+- Swagger / OpenAPI backend documentation
+
+Health endpoint:
+
+- `GET /api/health`
+
+Admin and docs routes:
+
+- internal admin dashboard: `http://localhost:3001/admin`
+- Swagger / OpenAPI: `http://localhost:3001/api/docs`
+
+## Internal Admin Dashboard
+
+The NestJS server now includes a lightweight internal ops dashboard served directly by the backend.
+
+Why it is lightweight:
+
+- no separate admin SPA
+- no heavy admin framework
+- simple server-rendered HTML with small JSON endpoints behind it
+- protected with an admin-only JWT cookie derived from the existing auth stack
+
+Access:
+
+- route: `http://localhost:3001/admin`
+- local demo admin user:
+  - `admin@dcredit.local`
+  - `AdminAccess123!`
+
+Sections:
+
+- `Overview`
+  - total users
+  - verified vs unverified
+  - users with sources, accounts, transactions, credits
+  - activation funnel counts and percentages
+  - latest signups
+  - latest verifications
+- `Users`
+  - per-user activation state
+  - counts for sources, accounts, transactions, credits
+  - detail view with journey steps, sources, accounts, credits, and recent transactions
+- `Searcher`
+  - text search by name/email
+  - filters by verification, activation stage, credits, and sources
+- `Database`
+  - readable explanation of the main tables
+  - relation summary
+  - table-by-table documentation
+- `Backend Docs`
+  - link to Swagger docs
+  - module and endpoint guide
+
+Activation stage logic used by the admin dashboard:
+
+- `registered`
+- `email_verified`
+- `source_connected`
+- `account_ready`
+- `transaction_ready`
+- `credit_ready`
+- `activated`
+
+Activation is defined as:
+
+- verified user
+- at least one financial source
+- at least one account
+- and either transaction data or at least one detected credit
+
+## Web App
+
+The web app remains React + TypeScript and is the canonical frontend.
+
+Location:
+
+- [`apps/web`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/web)
+
+Run:
+
+```bash
+pnpm dev:web
+```
+
+Set API origin in [`apps/web/.env.example`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/web/.env.example):
+
+```bash
+VITE_API_URL=http://localhost:3001
+```
+
+If `VITE_API_URL` is omitted, the local Vite `/api` proxy is used.
+
+The web app includes:
+
+- login
+- register
+- verification confirmation
+- protected app shell
+- bilingual tabs for Home, Credits, Spending, Sources, and Profile
 
 ## Mobile App
 
-`apps/mobile` now mirrors the web product architecture with:
+The mobile app remains React Native + Expo.
 
-- auth flow screens: login, register, verification info
-- authenticated tabs: Home, Credits, Spending, Sources, Profile
-- React Query for API-ready server state
-- React Navigation for auth stack + bottom tabs
-- shared bilingual strings from `@dcredit/i18n`
-- shared domain packages available from `@dcredit/core` and `@dcredit/types`
+Location:
 
-Mobile structure:
+- [`apps/mobile`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/mobile)
 
-- `apps/mobile/src/navigation`
-- `apps/mobile/src/screens`
-- `apps/mobile/src/context`
-- `apps/mobile/src/services/api`
-- `apps/mobile/src/components`
-- `apps/mobile/src/theme`
+Structure:
 
-Configure the API host with:
+- `src/navigation`
+- `src/screens`
+- `src/context`
+- `src/services/api`
+- `src/components`
+- `src/theme`
+
+Run:
 
 ```bash
-cp apps/mobile/.env.example apps/mobile/.env
+pnpm dev:mobile
 ```
 
-Then set:
+Mobile uses the same major feature grouping as web:
+
+- Home
+- Credits
+- Spending
+- Sources
+- Profile
+
+Mobile API host is configured in [`apps/mobile/.env.example`](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/mobile/.env.example):
 
 ```bash
 EXPO_PUBLIC_API_URL=http://localhost:3001
 ```
 
-Important for real devices/emulators:
+For real device/emulator testing outside a local desktop loop:
 
-- `localhost` usually will not reach your Nest API from a phone
-- use your machine LAN IP, Expo tunnel, or Android reverse proxying as needed
-- verification emails still go through Mailpit, and the current mobile verification screen is informational until native deep linking is added
-
----
-
-## Backend Foundation
-
-The backend now includes:
-- TypeORM entities and an initial migration for users, verification tokens, financial sources, accounts, categories, credits, installments, and transactions
-- NestJS module scaffolding for `auth`, `users`, `email`, `financial-sources`, `accounts`, `transactions`, `credits`, `categories`, `dashboard`, `health`, and `shared`
-- Seed scripts with deterministic demo data
-- Environment validation and typed config factories for app, auth, database, and mail settings
-
----
+- `localhost` usually is not enough
+- use your machine LAN IP, Expo tunnel, or Android reverse proxying
+- native deep linking for verification is still future work
 
 ## Authentication
 
-Implemented endpoints under the global `/api` prefix:
+Auth works conceptually across the product foundation:
+
+- register creates an unverified account
+- verification email is sent through Mailpit
+- verified users can log in and receive JWT access tokens
+- protected routes/screens rely on JWT-backed current-user rehydration
+
+Implemented API endpoints:
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `POST /api/auth/verify-email`
 - `POST /api/auth/resend-verification`
 - `GET /api/users/me`
-
-### Verification flow
-
-1. `POST /api/auth/register` creates an unverified user and stores a 24-hour verification token.
-2. The API sends a verification email through Mailpit SMTP.
-3. Open Mailpit at [http://localhost:8025](http://localhost:8025), copy the verification link, and call `POST /api/auth/verify-email` with the token if you want to complete verification via API.
-4. Only verified accounts can log in and receive JWT access tokens.
-
-### Web auth flow
-
-The canonical React app implements:
-
-- `/login`
-- `/register`
-- `/verify-email`
-- protected routes for `/`, `/credits`, `/spending`, `/sources`, and `/profile`
-
-For the web MVP:
-
-- JWT is stored in local storage
-- `GET /api/users/me` rehydrates the session on refresh
-- language switching updates the UI immediately
-- `PATCH /api/users/me` persists the preferred language to the backend
-
-### Demo users
-
-Seeded accounts after `pnpm seed` or `pnpm db:reset`:
-
-- Verified user:
-  - email: `demo@dcredit.local`
-  - password: `ChangeMe123!`
-- Unverified user:
-  - email: `pending@dcredit.local`
-  - password: `VerifyMe123!`
-  - seed token: `demo-unverified-verification-token`
-
-### Example API calls
-
-Register:
-
-```bash
-curl -X POST http://localhost:3001/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "new.user@dcredit.local",
-    "password": "NewUser123!",
-    "fullName": "New User",
-    "preferredLanguage": "en"
-  }'
-```
-
-Verify email:
-
-```bash
-curl -X POST http://localhost:3001/api/auth/verify-email \
-  -H "Content-Type: application/json" \
-  -d '{"token":"demo-unverified-verification-token"}'
-```
-
-Login:
-
-```bash
-curl -X POST http://localhost:3001/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "demo@dcredit.local",
-    "password": "ChangeMe123!"
-  }'
-```
-
-Protected profile:
-
-```bash
-curl http://localhost:3001/api/users/me \
-  -H "Authorization: Bearer <access-token>"
-```
-
----
-
-## Financial API
-
-Protected endpoints for the main dCredit demo features:
-
-- `GET /api/dashboard/summary`
-  - Returns consolidated liquid balance, weekly grouped spending, categorized spending, and monthly credit obligations.
-- `GET /api/dashboard/liquid-balance`
-  - Returns total liquid balance across checking, savings, and wallet accounts with a breakdown by financial source and account.
-- `GET /api/dashboard/weekly-spending`
-  - Returns current-week and previous-week spending totals, grouped by day and category.
-- `GET /api/transactions/categories-summary`
-  - Returns categorized spending totals and percentage share by category.
-- `GET /api/transactions?limit=&categoryKey=`
-  - Returns recent transaction insights, optionally filtered by category.
-- `GET /api/credits`
-  - Returns all credits with interest rate, monthly payment, next payment date, deferred payment date, and high-interest flags.
-- `GET /api/credits/:id`
-  - Returns one credit with installments, financial source metadata, and timeline-ready installment items.
-- `GET /api/credits/timeline`
-  - Returns gantt-ready credit timeline data grouped by credit.
-- `GET /api/financial-sources`
-  - Returns financial sources with status, vault reference placeholder, accounts, liquid balance, and credit counts.
-- `POST /api/financial-sources`
-  - Creates a financial source for the authenticated user. `credentialReference` must be a secure vault reference such as `vault://sources/new-bank/user-123`.
-- `PATCH /api/financial-sources/:id`
-  - Updates the source status, provider metadata, or vault reference placeholder.
 - `PATCH /api/users/me`
-  - Updates the authenticated user profile fields currently supported by the web MVP, including `preferredLanguage`.
+- `GET /admin`
+- `GET /admin/overview`
+- `GET /admin/users`
+- `GET /admin/users/:id`
+- `GET /admin/search`
+- `GET /admin/database`
+- `GET /admin/backend-docs`
+- `GET /admin/docs`
 
-### Financial demo data
+## Financial Views Covered
 
-The demo seed now includes:
+The current foundation covers the requested product surfaces:
 
-- one verified demo user with multiple financial sources
-- multiple liquid accounts across bank and wallet sources
-- multiple credits with different interest rates
-- future installments for timeline and monthly obligation calculations
-- categorized transactions across two weeks for grouped spending and percentage summaries
+- consolidated general balance
+- weekly grouped spending
+- categorized spending totals and percentages
+- monthly credit obligations
+- next payment highlight
+- interest rate visibility per credit
+- installment timeline / gantt-ready credit data
+- financial source list and setup placeholder
 
-### Example endpoint checks
+## Bilingual Support
 
-```bash
-curl http://localhost:3001/api/dashboard/summary \
-  -H "Authorization: Bearer <access-token>"
-```
+Bilingual support exists across the product through the shared i18n package.
 
-```bash
-curl http://localhost:3001/api/credits/timeline \
-  -H "Authorization: Bearer <access-token>"
-```
+Supported languages:
 
-```bash
-curl -X POST http://localhost:3001/api/financial-sources \
-  -H "Authorization: Bearer <access-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "providerName": "New Payroll Bank",
-    "providerType": "manual",
-    "status": "pending",
-    "credentialReference": "vault://sources/new-payroll-bank/user-123"
-  }'
-```
+- English
+- Spanish
+
+Web and mobile both use the shared translation layer instead of hardcoding separate copy systems.
+
+## What Remains Placeholder / Future Integration
+
+The foundation is production-minded, but some features are intentionally still placeholders:
+
+- banking provider integrations are not yet connected to real institutions
+- `financial-sources` currently uses secure vault reference placeholders instead of real credential vaulting
+- mobile verification currently routes users toward the web verification flow
+- no real Plaid/open-banking connector is implemented yet
+- recommendation quality is demo-oriented and based on seeded data
+
+## Demo Users
+
+After `pnpm seed` or `pnpm db:reset`:
+
+- admin:
+  - `admin@dcredit.local`
+  - `AdminAccess123!`
+- verified:
+  - `demo@dcredit.local`
+  - `ChangeMe123!`
+- unverified:
+  - `pending@dcredit.local`
+  - `VerifyMe123!`
+
+## Quality Status
+
+The project remains aligned with the intended MVP foundation:
+
+- NestJS backend
+- React web frontend
+- React Native mobile frontend
+- PostgreSQL database
+- Mailpit verification email flow
+- Docker Compose runtime for postgres + api + mailpit
+- bilingual support across product surfaces
+- migration-based schema workflow
+- seeded demo data and financial views

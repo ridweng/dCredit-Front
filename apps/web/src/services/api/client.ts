@@ -38,10 +38,20 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(buildApiUrl(path), {
-    ...options,
-    headers,
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(buildApiUrl(path), {
+      ...options,
+      headers,
+    });
+  } catch (error) {
+    throw new ApiError(
+      'Unable to reach the API. Check that the Nest server is running and VITE_API_URL is correct.',
+      0,
+      error,
+    );
+  }
 
   const contentType = response.headers.get('content-type');
   const isJson = contentType?.includes('application/json');

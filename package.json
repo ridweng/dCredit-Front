@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
+    "install:deps": "pnpm install",
     "dev:api": "pnpm --filter @dcredit/api start:dev",
     "dev:web": "pnpm --filter @dcredit/web dev",
     "dev:mobile": "pnpm --filter @dcredit/mobile start",
@@ -15,10 +16,11 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
-    "ios": "EXPO_PUBLIC_WEB_APP_URL=http://127.0.0.1:5173 pnpm --filter @workspace/dcredit-mobile ios",
+    "ios": "pnpm --filter @dcredit/mobile ios",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./apps/**\" --filter \"./scripts\" --if-present run typecheck",
+    "verify": "pnpm run typecheck && pnpm --filter @dcredit/api build && pnpm --filter @dcredit/web build && pnpm --filter @dcredit/mobile typecheck"
   },
   "private": true,
   "devDependencies": {
