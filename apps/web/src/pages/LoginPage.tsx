@@ -1,11 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
-import { ArrowRight, Mail } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { login } from '@/services/api/auth';
@@ -41,7 +40,6 @@ export function LoginPage() {
                 <p className="text-2xl font-semibold">{t('app.brand')}</p>
                 <p className="mt-2 max-w-sm text-sm text-primary-foreground/85">{t('app.tagline')}</p>
               </div>
-              <LanguageSwitcher />
             </div>
 
             <div className="mt-16 space-y-6">

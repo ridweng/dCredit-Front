@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppScreen } from '@/components/AppScreen';
-import { LanguageToggle } from '@/components/LanguageToggle';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useLanguage } from '@/context/LanguageContext';
 import { register } from '@/services/api/auth';
@@ -13,14 +12,14 @@ import type { AuthStackParamList } from '@/navigation/types';
 type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 
 export function RegisterScreen({ navigation }: Props) {
-  const { locale, t } = useLanguage();
+  const { t } = useLanguage();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: () => register(email, password, fullName, locale),
+    mutationFn: () => register(email, password, fullName, 'es'),
     onSuccess: () => {
       navigation.replace('VerificationInfo', { email });
     },
@@ -30,11 +29,7 @@ export function RegisterScreen({ navigation }: Props) {
   });
 
   return (
-    <AppScreen
-      title={t('auth.register.title')}
-      subtitle={t('auth.register.subtitle')}
-      headerRight={<LanguageToggle />}
-    >
+    <AppScreen title={t('auth.register.title')} subtitle={t('auth.register.subtitle')}>
       <View style={styles.formCard}>
         <Text style={styles.label}>{t('common.fullName')}</Text>
         <TextInput style={styles.input} value={fullName} onChangeText={setFullName} />

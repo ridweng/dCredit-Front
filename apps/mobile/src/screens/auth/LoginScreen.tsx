@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppScreen } from '@/components/AppScreen';
-import { LanguageToggle } from '@/components/LanguageToggle';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -31,11 +30,7 @@ export function LoginScreen({ navigation }: Props) {
   });
 
   return (
-    <AppScreen
-      title={t('auth.login.title')}
-      subtitle={t('auth.login.subtitle')}
-      headerRight={<LanguageToggle />}
-    >
+    <AppScreen title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
       <View style={styles.heroCard}>
         <Text style={styles.heroTitle}>{t('app.brand')}</Text>
         <Text style={styles.heroText}>{t('auth.login.demoHint')}</Text>

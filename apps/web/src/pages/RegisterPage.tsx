@@ -5,17 +5,14 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/context/LanguageContext';
 import { register } from '@/services/api/auth';
 
 export function RegisterPage() {
-  const { locale, t } = useLanguage();
+  const { t } = useLanguage();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [preferredLanguage, setPreferredLanguage] = useState(locale);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -38,7 +35,6 @@ export function RegisterPage() {
             <p className="text-2xl font-semibold">{t('auth.register.title')}</p>
             <p className="mt-2 text-sm text-muted-foreground">{t('auth.register.subtitle')}</p>
           </div>
-          <LanguageSwitcher />
         </div>
 
         {successMessage ? (
@@ -68,7 +64,7 @@ export function RegisterPage() {
                 email,
                 password,
                 fullName,
-                preferredLanguage,
+                preferredLanguage: 'es',
               });
             }}
           >
@@ -91,17 +87,6 @@ export function RegisterPage() {
                 minLength={8}
                 required
               />
-            </label>
-
-            <label className="block space-y-2">
-              <span className="text-sm font-medium">{t('auth.register.preferredLanguage')}</span>
-              <Select
-                value={preferredLanguage}
-                onChange={(event) => setPreferredLanguage(event.target.value as 'en' | 'es')}
-              >
-                <option value="en">{t('languages.en')}</option>
-                <option value="es">{t('languages.es')}</option>
-              </Select>
             </label>
 
             {error ? (

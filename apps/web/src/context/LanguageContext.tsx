@@ -24,7 +24,7 @@ function resolveInitialLocale(): Locale {
     return stored;
   }
 
-  return navigator.language.toLowerCase().startsWith('es') ? 'es' : 'en';
+  return 'es';
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {

@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { cn } from '@/lib/utils';
@@ -60,7 +59,6 @@ export function AppShell() {
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
-            <LanguageSwitcher />
             <div className="rounded-full bg-muted px-3 py-2 text-sm text-muted-foreground">
               {user?.fullName}
             </div>

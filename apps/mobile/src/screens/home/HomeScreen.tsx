@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Text, View, StyleSheet } from 'react-native';
 import { AppScreen } from '@/components/AppScreen';
 import { ErrorView } from '@/components/ErrorView';
-import { LanguageToggle } from '@/components/LanguageToggle';
 import { LoadingView } from '@/components/LoadingView';
 import { MetricCard } from '@/components/MetricCard';
 import { SectionCard } from '@/components/SectionCard';
@@ -33,11 +32,7 @@ export function HomeScreen() {
   const summary = query.data;
 
   return (
-    <AppScreen
-      title={t('home.title')}
-      subtitle={t('home.subtitle')}
-      headerRight={<LanguageToggle />}
-    >
+    <AppScreen title={t('home.title')} subtitle={t('home.subtitle')}>
       <View style={styles.metricGrid}>
         <MetricCard
           label={t('home.balance')}
