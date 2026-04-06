@@ -25,8 +25,12 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().int().positive().default(1025),
   SMTP_USER: z.string().optional().default(''),
   SMTP_PASS: z.string().optional().default(''),
-  SMTP_FROM: z.string().min(1).default('noreply@dcredit.local'),
-  WEB_URL: z.string().url().default('http://localhost:5173'),
+  MAIL_FROM: z.string().min(1).default('noreply@dcredit.local'),
+  SMTP_FROM: z.string().min(1).optional(),
+  APP_WEB_URL: z.string().url().default('http://localhost:5173'),
+  WEB_URL: z.string().url().optional(),
+  JWT_SECRET: z.string().min(16).default('dev-only-change-me-secret'),
+  JWT_EXPIRES_IN: z.string().min(1).default('1h'),
   CORS_ORIGINS: z.string().optional(),
 });
 

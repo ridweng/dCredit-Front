@@ -7,12 +7,25 @@ import { PreferredLanguage } from '../../common/enums/preferred-language.enum';
 import { ProviderType } from '../../common/enums/provider-type.enum';
 import { TransactionType } from '../../common/enums/transaction-type.enum';
 
-export const demoUserSeed = {
+export const demoVerifiedUserSeed = {
   email: 'demo@dcredit.local',
   password: 'ChangeMe123!',
   fullName: 'Alex Rivera',
   emailVerified: true,
   preferredLanguage: PreferredLanguage.EN,
+};
+
+export const demoUnverifiedUserSeed = {
+  email: 'pending@dcredit.local',
+  password: 'VerifyMe123!',
+  fullName: 'Jamie Torres',
+  emailVerified: false,
+  preferredLanguage: PreferredLanguage.ES,
+};
+
+export const demoUnverifiedVerificationTokenSeed = {
+  token: 'demo-unverified-verification-token',
+  expiresAt: new Date('2026-12-31T23:59:59.000Z'),
 };
 
 export const demoFinancialSourceSeed = {

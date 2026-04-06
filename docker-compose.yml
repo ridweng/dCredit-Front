@@ -8,8 +8,8 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: dcredit
-      POSTGRES_USER: dcredit
-      POSTGRES_PASSWORD: dcredit_dev_password
+      POSTGRES_USER: admn
+      POSTGRES_PASSWORD: passAd1mFr4us
     ports:
       - '5433:5432'
     volumes:
@@ -59,13 +59,15 @@ services:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_NAME: dcredit
-      DATABASE_USER: dcredit
-      DATABASE_PASSWORD: dcredit_dev_password
-      DATABASE_URL: postgresql://dcredit:dcredit_dev_password@postgres:5432/dcredit
+      DATABASE_USER: admn
+      DATABASE_PASSWORD: passAd1mFr4us
+      DATABASE_URL: postgresql://admn:passAd1mFr4us@postgres:5432/dcredit
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
-      SMTP_FROM: noreply@dcredit.local
-      WEB_URL: http://localhost:5173
+      MAIL_FROM: noreply@dcredit.local
+      APP_WEB_URL: http://localhost:5173
+      JWT_SECRET: dev-only-change-me-secret-was-changed?!
+      JWT_EXPIRES_IN: 1h
     depends_on:
       postgres:
         condition: service_healthy

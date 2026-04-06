@@ -15,38 +15,63 @@ import {
   demoFinancialSourceSeed,
   demoInstallmentsSeed,
   demoTransactionsSeed,
-  demoUserSeed,
+  demoUnverifiedUserSeed,
+  demoUnverifiedVerificationTokenSeed,
+  demoVerifiedUserSeed,
 } from './seed-data';
 
-async function seedUser(dataSource: DataSource): Promise<User> {
+async function seedUser(
+  dataSource: DataSource,
+  input: {
+    email: string;
+    password: string;
+    fullName: string;
+    emailVerified: boolean;
+    preferredLanguage: User['preferredLanguage'];
+  },
+): Promise<User> {
   const userRepository = dataSource.getRepository(User);
-  const passwordHash = await hash(demoUserSeed.password, 10);
+  const passwordHash = await hash(input.password, 10);
 
   await userRepository.upsert(
     {
-      email: demoUserSeed.email,
+      email: input.email,
       passwordHash,
-      fullName: demoUserSeed.fullName,
-      emailVerified: demoUserSeed.emailVerified,
-      preferredLanguage: demoUserSeed.preferredLanguage,
+      fullName: input.fullName,
+      emailVerified: input.emailVerified,
+      preferredLanguage: input.preferredLanguage,
     },
     ['email'],
   );
 
-  return userRepository.findOneByOrFail({ email: demoUserSeed.email });
+  return userRepository.findOneByOrFail({ email: input.email });
 }
 
-async function seedVerificationToken(dataSource: DataSource, user: User): Promise<void> {
+async function syncVerificationTokens(
+  dataSource: DataSource,
+  user: User,
+  tokenSeed:
+    | {
+        token: string;
+        expiresAt: Date;
+      }
+    | null,
+): Promise<void> {
   const repository = dataSource.getRepository(VerificationToken);
 
-  await repository.upsert(
-    {
+  await repository.delete({ userId: user.id });
+
+  if (!tokenSeed) {
+    return;
+  }
+
+  await repository.save(
+    repository.create({
       userId: user.id,
-      token: 'demo-verification-token',
-      expiresAt: new Date('2026-12-31T23:59:59.000Z'),
-      usedAt: new Date('2026-04-01T09:05:00.000Z'),
-    },
-    ['token'],
+      token: tokenSeed.token,
+      expiresAt: tokenSeed.expiresAt,
+      usedAt: null,
+    }),
   );
 }
 
@@ -210,14 +235,17 @@ async function seedTransactions(
 }
 
 export async function runSeeds(dataSource: DataSource): Promise<void> {
-  const user = await seedUser(dataSource);
-  await seedVerificationToken(dataSource, user);
+  const verifiedUser = await seedUser(dataSource, demoVerifiedUserSeed);
+  const unverifiedUser = await seedUser(dataSource, demoUnverifiedUserSeed);
 
-  const financialSource = await seedFinancialSource(dataSource, user);
-  const account = await seedAccount(dataSource, user, financialSource);
+  await syncVerificationTokens(dataSource, verifiedUser, null);
+  await syncVerificationTokens(dataSource, unverifiedUser, demoUnverifiedVerificationTokenSeed);
+
+  const financialSource = await seedFinancialSource(dataSource, verifiedUser);
+  const account = await seedAccount(dataSource, verifiedUser, financialSource);
   const categories = await seedCategories(dataSource);
-  const credit = await seedCredit(dataSource, user, financialSource);
+  const credit = await seedCredit(dataSource, verifiedUser, financialSource);
 
   await seedInstallments(dataSource, credit);
-  await seedTransactions(dataSource, user, account, credit, categories);
+  await seedTransactions(dataSource, verifiedUser, account, credit, categories);
 }

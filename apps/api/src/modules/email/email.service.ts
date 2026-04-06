@@ -2,6 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
+import { buildVerificationEmailTemplate } from './templates/verification-email.template';
+
+export interface SendVerificationEmailInput {
+  to: string;
+  fullName: string;
+  verificationUrl: string;
+}
 
 @Injectable()
 export class EmailService {
@@ -22,12 +29,18 @@ export class EmailService {
     });
   }
 
-  async sendVerificationEmail(to: string, verificationToken: string): Promise<void> {
+  async sendVerificationEmail(input: SendVerificationEmailInput): Promise<void> {
+    const template = buildVerificationEmailTemplate({
+      fullName: input.fullName,
+      verificationUrl: input.verificationUrl,
+    });
+
     await this.transporter.sendMail({
       from: this.defaultFrom,
-      to,
-      subject: 'Verify your dCredit account',
-      text: `Verification token: ${verificationToken}`,
+      to: input.to,
+      subject: template.subject,
+      text: template.text,
+      html: template.html,
     });
   }
 }

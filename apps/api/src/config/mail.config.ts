@@ -9,6 +9,6 @@ export const mailConfig = registerAs('mail', () => {
     port: env.SMTP_PORT,
     user: env.SMTP_USER,
     pass: env.SMTP_PASS,
-    from: env.SMTP_FROM,
+    from: env.MAIL_FROM ?? env.SMTP_FROM ?? 'noreply@dcredit.local',
   };
 });

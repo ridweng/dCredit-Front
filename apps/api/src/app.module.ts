@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { appConfig } from './config/app.config';
+import { authConfig } from './config/auth.config';
 import { databaseConfig } from './config/database.config';
 import { mailConfig } from './config/mail.config';
 import { validateEnv } from './config/env.validation';
@@ -25,7 +26,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
       cache: true,
       envFilePath: '.env',
       validate: validateEnv,
-      load: [appConfig, databaseConfig, mailConfig],
+      load: [appConfig, authConfig, databaseConfig, mailConfig],
     }),
     TypeOrmModule.forRootAsync({
       useFactory: buildTypeOrmModuleOptions,
