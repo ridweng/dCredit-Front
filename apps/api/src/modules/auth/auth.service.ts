@@ -116,11 +116,17 @@ export class AuthService {
       throw new BadRequestException('Verification token is invalid or has expired.');
     }
 
-    await this.usersService.markVerificationTokenUsed(verificationToken.id, now);
+    if (verificationToken.user.emailVerified || verificationToken.user.verifiedAt) {
+      throw new BadRequestException('Email is already verified.');
+    }
 
-    const user = verificationToken.user.emailVerified
-      ? verificationToken.user
-      : await this.usersService.markEmailVerified(verificationToken.userId);
+    await this.usersService.markVerificationTokenUsed(verificationToken.id, now);
+    await this.usersService.invalidateOtherVerificationTokens(
+      verificationToken.userId,
+      verificationToken.id,
+      now,
+    );
+    const user = await this.usersService.markEmailVerified(verificationToken.userId, now);
 
     return {
       message: 'Email verified successfully.',

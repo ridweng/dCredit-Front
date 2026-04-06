@@ -36,6 +36,7 @@ async function seedUser(
     password: string;
     fullName: string;
     emailVerified: boolean;
+    verifiedAt: Date | null;
     preferredLanguage: User['preferredLanguage'];
     isAdmin?: boolean;
   },
@@ -49,6 +50,7 @@ async function seedUser(
       passwordHash,
       fullName: input.fullName,
       emailVerified: input.emailVerified,
+      verifiedAt: input.verifiedAt,
       isAdmin: input.isAdmin ?? false,
       preferredLanguage: input.preferredLanguage,
     },

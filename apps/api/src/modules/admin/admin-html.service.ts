@@ -921,7 +921,7 @@ export class AdminHtmlService {
                     \${data.latestVerifications.map((entry) => \`
                       <tr>
                         <td><strong>\${escapeHtml(entry.user.fullName)}</strong><br /><span class="muted">\${escapeHtml(entry.user.email)}</span></td>
-                        <td>\${dateTime(entry.usedAt)}</td>
+                        <td>\${dateTime(entry.verifiedAt)}</td>
                       </tr>
                     \`).join('')}
                   </tbody>

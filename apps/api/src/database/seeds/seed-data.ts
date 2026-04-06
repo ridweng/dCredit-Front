@@ -12,6 +12,7 @@ export const demoVerifiedUserSeed = {
   password: 'ChangeMe123!',
   fullName: 'Alex Rivera',
   emailVerified: true,
+  verifiedAt: new Date('2026-02-18T09:30:00.000Z'),
   preferredLanguage: PreferredLanguage.EN,
 };
 
@@ -20,6 +21,7 @@ export const demoAdminUserSeed = {
   password: 'AdminAccess123!',
   fullName: 'Morgan Ops',
   emailVerified: true,
+  verifiedAt: new Date('2026-03-03T16:45:00.000Z'),
   preferredLanguage: PreferredLanguage.EN,
   isAdmin: true,
 };
@@ -29,6 +31,7 @@ export const demoUnverifiedUserSeed = {
   password: 'VerifyMe123!',
   fullName: 'Jamie Torres',
   emailVerified: false,
+  verifiedAt: null,
   preferredLanguage: PreferredLanguage.ES,
 };
 
@@ -39,6 +42,7 @@ export const activationJourneyUserSeeds = [
     password: 'ChangeMe123!',
     fullName: 'Taylor Registered',
     emailVerified: false,
+    verifiedAt: null,
     preferredLanguage: PreferredLanguage.EN,
     stage: 'registered',
   },
@@ -48,6 +52,7 @@ export const activationJourneyUserSeeds = [
     password: 'ChangeMe123!',
     fullName: 'Riley Verified',
     emailVerified: true,
+    verifiedAt: new Date('2026-03-10T11:00:00.000Z'),
     preferredLanguage: PreferredLanguage.EN,
     stage: 'email_verified',
   },
@@ -57,6 +62,7 @@ export const activationJourneyUserSeeds = [
     password: 'ChangeMe123!',
     fullName: 'Jordan Source',
     emailVerified: true,
+    verifiedAt: new Date('2026-03-12T11:00:00.000Z'),
     preferredLanguage: PreferredLanguage.ES,
     stage: 'source_connected',
   },
@@ -66,6 +72,7 @@ export const activationJourneyUserSeeds = [
     password: 'ChangeMe123!',
     fullName: 'Casey Account',
     emailVerified: true,
+    verifiedAt: new Date('2026-03-14T11:00:00.000Z'),
     preferredLanguage: PreferredLanguage.EN,
     stage: 'account_ready',
   },
@@ -75,6 +82,7 @@ export const activationJourneyUserSeeds = [
     password: 'ChangeMe123!',
     fullName: 'Avery Spend',
     emailVerified: true,
+    verifiedAt: new Date('2026-03-16T11:00:00.000Z'),
     preferredLanguage: PreferredLanguage.ES,
     stage: 'transaction_ready',
   },
@@ -84,6 +92,7 @@ export const activationJourneyUserSeeds = [
     password: 'ChangeMe123!',
     fullName: 'Skyler Credit',
     emailVerified: true,
+    verifiedAt: new Date('2026-03-18T11:00:00.000Z'),
     preferredLanguage: PreferredLanguage.EN,
     stage: 'credit_ready',
   },

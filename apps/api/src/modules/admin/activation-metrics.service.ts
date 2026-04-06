@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { VerificationToken } from '../users/verification-token.entity';
+import { User } from '../users/user.entity';
 import { ActivationFunnelEntry, ActivationStage } from './admin.types';
 import { UserJourneyService } from './user-journey.service';
 
@@ -9,8 +9,8 @@ import { UserJourneyService } from './user-journey.service';
 export class ActivationMetricsService {
   constructor(
     private readonly userJourneyService: UserJourneyService,
-    @InjectRepository(VerificationToken)
-    private readonly verificationTokenRepository: Repository<VerificationToken>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async getOverview() {
@@ -27,11 +27,10 @@ export class ActivationMetricsService {
       isAdmin: user.isAdmin,
     }));
 
-    const latestVerifications = await this.verificationTokenRepository
-      .createQueryBuilder('verificationToken')
-      .leftJoinAndSelect('verificationToken.user', 'user')
-      .where('verificationToken.usedAt IS NOT NULL')
-      .orderBy('verificationToken.usedAt', 'DESC')
+    const latestVerifications = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.verifiedAt IS NOT NULL')
+      .orderBy('user.verifiedAt', 'DESC')
       .take(8)
       .getMany();
 
@@ -58,13 +57,13 @@ export class ActivationMetricsService {
       activationDefinition:
         'Activated = verified user with at least one financial source, one account, and either transaction data or a detected credit.',
       latestSignups,
-      latestVerifications: latestVerifications.map((token) => ({
-        id: token.id,
-        usedAt: token.usedAt,
+      latestVerifications: latestVerifications.map((user) => ({
+        id: user.id,
+        verifiedAt: user.verifiedAt,
         user: {
-          id: token.user.id,
-          fullName: token.user.fullName,
-          email: token.user.email,
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
         },
       })),
       trends: recentSignupTrend,

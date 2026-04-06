@@ -47,6 +47,7 @@ export class UsersService {
       passwordHash: input.passwordHash,
       fullName: input.fullName.trim(),
       emailVerified: false,
+      verifiedAt: null,
       isAdmin: input.isAdmin ?? false,
       preferredLanguage: input.preferredLanguage,
     });
@@ -67,6 +68,7 @@ export class UsersService {
         passwordHash: input.passwordHash,
         fullName: input.fullName.trim(),
         emailVerified: false,
+        verifiedAt: null,
         isAdmin: input.isAdmin ?? false,
         preferredLanguage: input.preferredLanguage,
       });
@@ -107,19 +109,41 @@ export class UsersService {
     );
   }
 
+  async invalidateOtherVerificationTokens(
+    userId: string,
+    excludeTokenId: string,
+    usedAt: Date,
+  ): Promise<void> {
+    await this.verificationTokenRepository
+      .createQueryBuilder()
+      .update(VerificationToken)
+      .set({ usedAt })
+      .where('"userId" = :userId', { userId })
+      .andWhere('id != :excludeTokenId', { excludeTokenId })
+      .andWhere('"usedAt" IS NULL')
+      .execute();
+  }
+
   async markVerificationTokenUsed(tokenId: string, usedAt: Date): Promise<void> {
     await this.verificationTokenRepository.update(tokenId, { usedAt });
   }
 
-  async markEmailVerified(userId: string): Promise<User> {
-    await this.userRepository.update(userId, { emailVerified: true });
+  async markEmailVerified(userId: string, verifiedAt: Date): Promise<User> {
     const user = await this.findById(userId);
 
     if (!user) {
       throw new Error(`Unable to load verified user ${userId}`);
     }
 
-    return user;
+    if (!user.emailVerified) {
+      user.emailVerified = true;
+    }
+
+    if (!user.verifiedAt) {
+      user.verifiedAt = verifiedAt;
+    }
+
+    return this.userRepository.save(user);
   }
 
   async updateCurrentUser(userId: string, input: UpdateCurrentUserInput): Promise<User> {
