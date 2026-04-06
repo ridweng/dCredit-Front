@@ -40,8 +40,8 @@ export default function Login() {
           <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-6">
             <span className="text-primary-foreground font-bold text-xl">dC</span>
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">{t('auth.login.title')}</h2>
-          <p className="text-muted-foreground mt-2">{t('auth.login.subtitle')}</p>
+          {/* <h2 className="text-3xl font-bold tracking-tight text-foreground">{t('auth.login.title')}</h2>
+          <p className="text-muted-foreground mt-2">{t('auth.login.subtitle')}</p> */}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

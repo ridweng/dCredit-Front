@@ -33,7 +33,6 @@ export function LoginScreen({ navigation }: Props) {
     <AppScreen title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
       <View style={styles.heroCard}>
         <Text style={styles.heroTitle}>{t('app.brand')}</Text>
-        <Text style={styles.heroText}>{t('auth.login.demoHint')}</Text>
       </View>
 
       <View style={styles.formCard}>

@@ -42,24 +42,22 @@ export function LoginPage() {
               </div>
             </div>
 
-            <div className="mt-16 space-y-6">
+            {/* <div className="mt-16 space-y-6">
               <div className="space-y-2">
                 <p className="text-4xl font-semibold leading-tight">{t('auth.login.title')}</p>
                 <p className="max-w-md text-sm text-primary-foreground/80">{t('auth.login.subtitle')}</p>
               </div>
               <div className="rounded-3xl border border-white/20 bg-white/10 p-5 text-sm text-primary-foreground/90">
-                <p className="font-medium">{t('auth.login.demoHint')}</p>
-                <p className="mt-2">demo@dcredit.local / ChangeMe123!</p>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="px-6 py-10 md:px-10 md:py-14">
             <div className="mx-auto max-w-md space-y-6">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <h1 className="text-3xl font-semibold">{t('auth.login.title')}</h1>
                 <p className="text-sm text-muted-foreground">{t('auth.login.subtitle')}</p>
-              </div>
+              </div> */}
 
               <form
                 className="space-y-4"
