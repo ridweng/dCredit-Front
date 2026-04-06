@@ -15,8 +15,8 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 export function LoginScreen({ navigation }: Props) {
   const { login: persistLogin } = useAuth();
   const { t } = useLanguage();
-  const [email, setEmail] = useState('demo@dcredit.local');
-  const [password, setPassword] = useState('ChangeMe123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
@@ -34,7 +34,6 @@ export function LoginScreen({ navigation }: Props) {
       <View style={styles.heroCard}>
         <Text style={styles.heroTitle}>{t('app.brand')}</Text>
         <Text style={styles.heroText}>{t('auth.login.demoHint')}</Text>
-        <Text style={styles.heroCredentials}>demo@dcredit.local / ChangeMe123!</Text>
       </View>
 
       <View style={styles.formCard}>
@@ -86,11 +85,6 @@ const styles = StyleSheet.create({
   heroText: {
     color: 'rgba(255,255,255,0.85)',
     lineHeight: 20,
-  },
-  heroCredentials: {
-    color: '#fff',
-    fontWeight: '700',
-    marginTop: 8,
   },
   formCard: {
     backgroundColor: colors.surface,
