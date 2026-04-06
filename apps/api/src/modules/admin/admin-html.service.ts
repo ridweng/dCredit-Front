@@ -89,7 +89,6 @@ export class AdminHtmlService {
         <input id="password" name="password" type="password" autocomplete="current-password" required />
         <button type="submit">Sign in</button>
       </form>
-      <p style="margin-top:16px">Local demo admin: <code>admin@dcredit.local</code></p>
     </main>
   </body>
 </html>`;
