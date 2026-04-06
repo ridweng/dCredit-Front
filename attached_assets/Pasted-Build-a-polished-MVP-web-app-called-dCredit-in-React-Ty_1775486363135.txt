@@ -1,0 +1,352 @@
+Build a polished MVP web app called dCredit in React + TypeScript, designed to run well in Replit and structured so the business logic can later be reused in React Native with minimal changes.
+
+The app must be bilingual from the start, supporting:
+- English
+- Spanish
+
+Language switching must be built into the product, not added later. All user-facing strings must come from a translation layer, with clean support for future languages. Default language should be English, with an easy toggle for Español.
+
+High-level product:
+dCredit helps salaried professionals with multiple debt products understand their real monthly debt capacity, prioritize repayments, and avoid cash-flow stress.
+
+Main user question:
+“How much additional debt can I safely take on right now?”
+
+Target user:
+Young salaried professionals, roughly ages 25–40, with stable monthly income, 2–4 debt products, and finances spread across multiple institutions.
+
+Core product principles:
+- Trust-first
+- Explainable recommendations
+- Calm, modern fintech design
+- Mobile-first responsive UI
+- Supportive and non-judgmental tone
+- No backend required for MVP
+- No real bank integrations yet
+- Use mock data only
+- Code should be clean, modular, and production-minded
+
+Technical stack requirements:
+- React
+- TypeScript
+- Vite
+- Clean folder structure
+- Replit-friendly setup
+- Use modern React patterns and functional components
+- Use reusable hooks and utilities
+- Use a lightweight i18n approach suitable for Replit, such as a simple custom translation setup or react-i18next
+- Business logic must be separated from presentation
+- Keep architecture ready for future React Native migration
+- No server required
+- No database required
+- Use local mock data / JSON / in-memory state
+
+Important architecture requirement:
+Anything that is pure financial logic must be isolated from UI so it can later be reused in React Native:
+- financial calculations
+- recommendation engine
+- risk scoring
+- debt prioritization
+- affordability simulation
+- localization dictionaries should also be modular
+
+What to build:
+A complete front-end MVP with these main sections/screens:
+
+1. Welcome / Onboarding
+Purpose:
+- Explain what dCredit does
+- Build trust immediately
+- Let user choose or switch language
+- Let user “connect” mock institutions
+
+Content:
+- Hero title
+- Short supportive explanation
+- Trust-focused copy
+- CTA button to start
+- Simulated account connection cards for 2–3 fake banks/institutions
+- Small note explaining that this MVP uses demo financial data
+
+2. Dashboard / Home
+Show:
+- Debt Health Score
+- Safe Additional Borrowing Capacity
+- Monthly Free Cash Flow
+- Cash-Flow Pressure status
+- One primary recommendation card
+- Trend summary comparing this month vs last month
+- Quick links to debts, simulator, and insights
+
+3. Debt Overview
+Show detected liabilities in a clear card/list view:
+- Debt name
+- Debt type
+- Estimated monthly payment
+- Outstanding balance
+- APR / interest rate if available
+- Priority level: High / Medium / Low
+- Short explanation for prioritization
+
+4. Borrowing Capacity Simulator
+Interactive form with inputs:
+- New loan amount
+- Interest rate
+- Loan term
+- Estimated monthly payment
+Then show:
+- Updated monthly debt load
+- Updated free cash flow
+- Updated risk status: Safe / Caution / Risky
+- Explanation in plain language
+- Better next action if risky
+
+5. Insights / Recommendations
+Show:
+- Which debt should be prioritized first
+- Why
+- Whether finances are tightening or improving month to month
+- Alerts and recommendations
+- A short action checklist
+
+6. Data Confidence / Assumptions
+Show:
+- Connected institutions
+- Last sync date (mock)
+- Detected income
+- Recurring expenses
+- Detected debt payments
+- Confidence badges like High / Medium / Needs Review
+- Editable assumptions to simulate corrections
+
+Core MVP logic:
+Use a transparent rules-based recommendation engine, not AI.
+
+The app should estimate:
+- Monthly net income
+- Essential recurring expenses
+- Existing minimum debt obligations
+- Monthly free cash flow
+- Debt burden ratio
+- Cash-flow stability trend
+- Safe additional monthly debt payment
+- Approximate safe additional borrowing amount
+- Debt repayment priority
+
+Keep formulas simple, believable, and explainable.
+
+Example rules:
+- freeCashFlow = income - essentialExpenses - currentDebtObligations
+- if freeCashFlow after a simulated new payment drops below a safety threshold, mark as Caution or Risky
+- if debt burden exceeds threshold, reduce safe borrowing estimate
+- if one debt has high APR and manageable balance, prioritize it
+- if free cash flow worsens over recent months, show Tightening status
+
+Every recommendation must include explanation text such as:
+- “We estimate this is safe because your recurring income remains well above your fixed obligations.”
+- “This looks risky because the new payment would reduce your monthly buffer below a safe threshold.”
+- “This debt is prioritized because it has a higher cost and is putting more pressure on your monthly cash flow.”
+
+Bilingual requirement:
+All visible UI text must exist in English and Spanish.
+Examples of product language that must be translated:
+- titles
+- buttons
+- labels
+- navigation
+- helper text
+- alerts
+- debt types
+- recommendations
+- simulator outputs
+- onboarding copy
+- trust messaging
+- empty states
+- explanatory tooltips or captions if included
+
+Provide translations for all core interface copy.
+Use clean translation keys like:
+- dashboard.title
+- dashboard.safeBorrowing
+- debts.priorityHigh
+- simulator.riskSafe
+- onboarding.connectAccounts
+
+Spanish should be natural and product-quality, not literal or awkward.
+Use neutral, professional Spanish suitable for Latin America.
+
+Recommended translated product tone:
+English:
+- supportive
+- calm
+- clear
+- trustworthy
+
+Spanish:
+- claro
+- profesional
+- cercano
+- nada juzgador
+
+Mock data requirements:
+Create realistic sample data for:
+- user profile
+- linked institutions
+- accounts
+- transactions
+- recurring income
+- recurring expenses
+- debt products
+- monthly summary history
+- recommendation outputs
+
+Example debt products:
+- credit card
+- personal loan
+- auto loan
+
+Example transaction categories:
+- salary
+- rent
+- utilities
+- groceries
+- transport
+- dining
+- insurance
+- subscription
+- credit card payment
+- personal loan payment
+- auto loan payment
+- transfer
+- cash withdrawal
+
+UI/UX requirements:
+- Mobile-first responsive design
+- Look polished inside browser and also realistic for future embedding in a mobile app shell
+- Clean fintech look
+- Rounded cards
+- Soft shadows
+- Good spacing
+- Clear hierarchy
+- Calm status colors
+- Avoid clutter
+- Avoid dark aggressive crypto styling
+- Avoid excessive charts
+- A couple of lightweight indicators, progress bars, or simple mini trends are enough
+
+Navigation:
+Use a simple responsive navigation pattern:
+- top bar on desktop
+- bottom nav or compact nav on mobile
+Include:
+- Home
+- Debts
+- Simulator
+- Insights
+- Data
+
+Suggested components:
+- AppShell
+- Header
+- LanguageSwitcher
+- Navigation
+- SummaryStatCard
+- RecommendationCard
+- DebtCard
+- StatusBadge
+- ConfidenceBadge
+- TrendIndicator
+- TransactionList
+- SimulatorForm
+- AssumptionsEditor
+- SectionHeader
+- EmptyState
+
+Suggested folder structure:
+- src/
+  - components/
+  - pages/
+  - hooks/
+  - utils/
+  - engine/
+  - data/
+  - i18n/
+  - types/
+  - constants/
+  - assets/
+
+Important implementation detail:
+Create a dedicated translation setup such as:
+- src/i18n/translations.ts
+- src/i18n/useTranslation.ts
+or use react-i18next with a clean setup
+
+Also create a language context or provider so switching language updates the full UI immediately.
+
+For React Native future reuse:
+Please keep non-UI logic isolated in:
+- src/engine/recommendationEngine.ts
+- src/utils/financialCalculations.ts
+- src/types/financial.ts
+
+Try to avoid coupling business logic to browser APIs.
+
+State management:
+Simple local state is enough.
+Use React context only where it helps, such as:
+- language
+- mock financial profile/session data
+
+Design copy examples:
+English examples:
+- “See how much debt you can safely take on.”
+- “Your cash flow is tightening.”
+- “Focus on this debt first.”
+- “This recommendation is based on your recurring income, essential expenses, and current debt payments.”
+
+Spanish examples:
+- “Descubre cuánta deuda adicional puedes asumir de forma segura.”
+- “Tu flujo de caja se está ajustando.”
+- “Enfócate primero en esta deuda.”
+- “Esta recomendación se basa en tus ingresos recurrentes, gastos esenciales y pagos actuales de deuda.”
+
+What to deliver:
+1. Complete React + TypeScript codebase for the MVP
+2. Replit-ready project structure
+3. All components and pages
+4. Mock financial data
+5. Calculation utilities
+6. Recommendation engine
+7. Full English and Spanish translation support
+8. Language switcher in UI
+9. Clean comments showing what can later be reused in React Native
+10. A polished responsive interface
+
+Also include:
+- a concise README with setup and run instructions for Replit
+- comments explaining where the reusable business logic lives
+- a small note in the code about how to replace mock data with real APIs later
+
+Do not include:
+- backend
+- real authentication
+- real bank APIs
+- marketplace offers
+- ads
+- upsells
+- investment features
+- unnecessary admin/settings complexity
+
+Quality bar:
+The result should feel like a credible fintech MVP for a startup demo, not a toy dashboard.
+
+If helpful, start by generating:
+- package.json
+- vite config
+- src/main.tsx
+- src/App.tsx
+- all supporting folders and files
+
+Return the full code with a sensible file-by-file structure.
+
+Use Tailwind CSS for styling and create a high-quality modern fintech UI with responsive cards, soft shadows, rounded corners, and strong spacing. Keep it elegant and calm.
