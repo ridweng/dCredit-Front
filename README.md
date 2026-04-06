@@ -32,9 +32,9 @@ dCredit/
 |------------|-----------------------------|
 | API        | NestJS (TypeScript)         |
 | Database   | PostgreSQL 16               |
-| ORM        | TypeORM (coming soon)       |
+| ORM        | TypeORM + migrations        |
 | Web        | React 19 + Vite             |
-| Mobile     | React Native + Expo 52      |
+| Mobile     | React Native + Expo         |
 | Email      | Mailpit (dev) / SMTP (prod) |
 | Containers | Docker Compose              |
 | Monorepo   | pnpm workspaces             |
@@ -79,6 +79,12 @@ pnpm docker:up
 pnpm docker:down
 ```
 
+To inspect running services:
+
+```bash
+pnpm docker:logs
+```
+
 ### Start individual apps
 
 ```bash
@@ -92,6 +98,25 @@ pnpm dev:web
 pnpm dev:mobile
 ```
 
+### Database workflow
+
+```bash
+# Run committed migrations against the configured DATABASE_URL
+pnpm migration:run
+
+# Revert the latest migration
+pnpm migration:revert
+
+# Generate a new migration from entity changes
+pnpm migration:generate --name=DescribeChange
+
+# Seed deterministic demo data
+pnpm seed
+
+# Drop the local schema, rerun migrations, and reseed
+pnpm db:reset
+```
+
 ---
 
 ## Service URLs
@@ -102,7 +127,7 @@ pnpm dev:mobile
 | Web app      | http://localhost:5173        | React frontend                   |
 | Mailpit UI   | http://localhost:8025        | View outgoing emails in dev      |
 | Mailpit SMTP | localhost:1025               | SMTP catch-all (dev only)        |
-| PostgreSQL   | localhost:5432               | DB: `dcredit`, user: `dcredit`   |
+| PostgreSQL   | localhost:5433               | DB: `dcredit`, user: `dcredit`   |
 
 ---
 
@@ -127,13 +152,25 @@ Design tokens (colors, spacing, typography, border radii) shared between web and
 
 ## Database
 
-PostgreSQL runs via Docker. The `dcredit` database is created automatically on first start.
+PostgreSQL runs via Docker. The `dcredit` database is created automatically on first start, and schema changes are applied through committed TypeORM migrations.
 
-To prepare for migrations (coming soon):
+Inspect the Postgres connection details:
+
 ```bash
-# Push schema changes (TypeORM migrations will be added)
-pnpm --filter @dcredit/api run migration:run
+# Open a psql shell in the running container
+docker compose exec postgres psql -U dcredit -d dcredit
+
+# Print connection settings from the API env example
+cat apps/api/.env.example
 ```
+
+Connection defaults:
+- Host: `localhost`
+- Port: `5433`
+- Database: `dcredit`
+- User: `dcredit`
+- Password: `dcredit_dev_password`
+- URL: `postgresql://dcredit:dcredit_dev_password@localhost:5433/dcredit`
 
 ---
 
@@ -156,12 +193,10 @@ The `apps/` structure above is the full-stack foundation for the production vers
 
 ---
 
-## Roadmap
+## Backend Foundation
 
-- [ ] TypeORM entities + migrations for User, DebtProduct, MonthlySnapshot
-- [ ] NestJS Auth module (JWT + refresh tokens)
-- [ ] NestJS Users and Debts modules with CRUD
-- [ ] Email notifications via Mailpit → production SMTP
-- [ ] React web app connected to NestJS API
-- [ ] React Native screens with API integration
-- [ ] EAS Build configuration for App Store + Google Play
+The backend now includes:
+- TypeORM entities and an initial migration for users, verification tokens, financial sources, accounts, categories, credits, installments, and transactions
+- NestJS module scaffolding for `auth`, `users`, `email`, `financial-sources`, `accounts`, `transactions`, `credits`, `categories`, `dashboard`, `health`, and `shared`
+- Seed scripts with deterministic demo data
+- Environment validation and typed config factories for app, database, and mail settings

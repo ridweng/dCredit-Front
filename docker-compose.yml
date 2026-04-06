@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   # ─────────────────────────────────────────
   # PostgreSQL
@@ -13,7 +11,7 @@ services:
       POSTGRES_USER: dcredit
       POSTGRES_PASSWORD: dcredit_dev_password
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - ./data/db:/var/lib/postgresql/data
       - ./apps/api/db/init:/docker-entrypoint-initdb.d
@@ -48,9 +46,11 @@ services:
   api:
     container_name: dcredit-api
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: pnpm --filter @dcredit/api start:dev
     restart: unless-stopped
+    working_dir: /workspace
     ports:
       - '3001:3001'
     environment:
@@ -72,8 +72,14 @@ services:
       mailpit:
         condition: service_healthy
     volumes:
-      - ./apps/api:/app
-      - /app/node_modules
+      - ./apps/api:/workspace/apps/api
+      - ./packages:/workspace/packages
+      - ./package.json:/workspace/package.json:ro
+      - ./pnpm-lock.yaml:/workspace/pnpm-lock.yaml:ro
+      - ./pnpm-workspace.yaml:/workspace/pnpm-workspace.yaml:ro
+      - ./tsconfig.base.json:/workspace/tsconfig.base.json:ro
+      - ./tsconfig.json:/workspace/tsconfig.json:ro
+      - /workspace/node_modules
     healthcheck:
       test: ['CMD-SHELL', 'curl -f http://localhost:3001/api/health || exit 1']
       interval: 15s

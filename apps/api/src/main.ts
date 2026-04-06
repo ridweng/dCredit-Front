@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
 
-  // Global prefix for all routes
   app.setGlobalPrefix('api');
 
-  // Global validation pipe — transforms and validates incoming DTOs
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -17,21 +17,21 @@ async function bootstrap() {
     }),
   );
 
-  // CORS — configure to match your web/mobile origins in production
   app.enableCors({
-    origin: [
-      process.env.WEB_URL ?? 'http://localhost:5173',
-      'http://localhost:19000', // Expo dev client
-      'http://localhost:19006', // Expo web
-    ],
+    origin: configService.get<string[]>('app.corsOrigins'),
     credentials: true,
   });
 
-  const port = process.env.PORT ?? 3001;
+  const port = configService.get<number>('app.port', 3001);
   await app.listen(port);
 
   console.log(`\n🚀 dCredit API running on: http://localhost:${port}/api`);
-  console.log(`   Environment: ${process.env.NODE_ENV ?? 'development'}\n`);
+  console.log(
+    `   Environment: ${configService.get<string>('app.nodeEnv', 'development')}\n`,
+  );
 }
 
-bootstrap();
+bootstrap().catch((error: unknown) => {
+  console.error('Failed to bootstrap dCredit API', error);
+  process.exit(1);
+});

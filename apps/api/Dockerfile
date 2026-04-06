@@ -1,29 +1,21 @@
 FROM node:20-alpine AS base
-WORKDIR /app
+WORKDIR /workspace
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.30.3 --activate
 
-# ─── Dependencies ────────────────────────────────────────────────────────────
-FROM base AS deps
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json tsconfig.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY packages/types/package.json packages/types/package.json
+COPY packages/core/package.json packages/core/package.json
+
 RUN pnpm install --frozen-lockfile
 
-# ─── Builder ─────────────────────────────────────────────────────────────────
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN pnpm build
+COPY apps/api apps/api
+COPY packages/types packages/types
+COPY packages/core packages/core
 
-# ─── Production image ─────────────────────────────────────────────────────────
-FROM node:20-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
-
-COPY --from=builder /app/dist ./dist
-COPY --from=deps /app/node_modules ./node_modules
-COPY package.json ./
+RUN pnpm --filter @dcredit/api build
 
 EXPOSE 3001
 
-CMD ["node", "dist/main.js"]
+CMD ["pnpm", "--filter", "@dcredit/api", "start:dev"]
