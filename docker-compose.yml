@@ -83,7 +83,13 @@ services:
       - ./tsconfig.json:/workspace/tsconfig.json:ro
       - /workspace/node_modules
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:3001/api/health || exit 1']
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3001/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
       interval: 15s
       timeout: 5s
       retries: 5
