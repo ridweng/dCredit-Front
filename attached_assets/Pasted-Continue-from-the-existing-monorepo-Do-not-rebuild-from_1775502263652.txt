@@ -1,0 +1,107 @@
+Continue from the existing monorepo. Do not rebuild from scratch.
+
+GOAL FOR THIS PHASE
+Build the React web app and connect it to the NestJS API.
+
+MANDATORY STACK
+- React + TypeScript
+- bilingual UI: Spanish and English
+- consume NestJS API
+- responsive design
+- fintech-quality UI
+
+WEB FEATURES TO IMPLEMENT
+Authentication:
+- login screen
+- register screen
+- email verification confirmation screen
+- protected app shell
+- logout
+
+Authenticated app sections / tabs:
+1. Inicio / Home
+2. Créditos / Credits
+3. Gastos / Spending
+4. Fuentes / Sources
+5. Perfil / Profile
+
+GROUP THE FEATURES LIKE THIS
+
+Inicio / Home
+- saldo general
+- weekly grouped spending summary
+- monthly credit obligations summary
+- next payment highlight
+- quick recommendations or info cards
+
+Créditos / Credits
+- list of credits
+- tasa de interés por crédito
+- mensualidad y fecha
+- gantt-style or timeline visualization for installments
+- high-interest highlight
+
+Gastos / Spending
+- gastos agrupados
+- gastos clasificados
+- weekly spending total
+- category totals and percentages
+- transaction/category insights
+
+Fuentes / Sources
+- configuración inicial
+- connected financial sources
+- secure vault explanation
+- add source form placeholder
+- source status
+
+Perfil / Profile
+- user details
+- preferred language
+- verification status
+- logout
+
+BILINGUAL REQUIREMENTS
+All UI text must come from a translation layer.
+Support:
+- English
+- Spanish
+
+Use clean translation keys.
+Switching language must update the entire UI immediately.
+
+DESIGN REQUIREMENTS
+- calm modern fintech feel
+- mobile-first responsive
+- clean cards
+- soft shadows
+- good spacing
+- simple charts or bars
+- readable timeline for credits
+- no clutter
+
+STATE / DATA REQUIREMENTS
+- integrate auth with NestJS JWT login/register
+- call real API endpoints created in previous phases
+- store auth token safely for web MVP
+- create API layer / hooks / services
+- use loading and error states
+
+SUGGESTED WEB STRUCTURE
+- pages
+- components
+- hooks
+- services/api
+- i18n
+- context
+- types
+
+README UPDATE
+Document:
+- how to run web app
+- how to configure API URL
+- auth flow
+- language switching
+
+Do not build the React Native app in this phase.
+Return the updated code file by file.

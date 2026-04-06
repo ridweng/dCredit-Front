@@ -1,22 +1,33 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 0.2.0
+  description: dCredit API — authentication, credits, spending, sources, profile, dashboard
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: dashboard
+    description: Dashboard summary
+  - name: credits
+    description: Credit obligations
+  - name: spending
+    description: Spending and expenses
+  - name: sources
+    description: Connected financial sources
+  - name: profile
+    description: User profile
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +35,646 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ────────────────────────────── AUTH ──────────────────────────────
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterBody"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "409":
+          description: Email already in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/verify-email:
+    post:
+      operationId: verifyEmail
+      tags: [auth]
+      summary: Verify email with token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyEmailBody"
+      responses:
+        "200":
+          description: Email verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ────────────────────────────── DASHBOARD ──────────────────────────────
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard summary
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Dashboard summary data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  # ────────────────────────────── CREDITS ──────────────────────────────
+  /credits:
+    get:
+      operationId: getCredits
+      tags: [credits]
+      summary: Get all credit obligations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of credits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Credit"
+
+  /credits/summary:
+    get:
+      operationId: getCreditsSummary
+      tags: [credits]
+      summary: Get credits monthly summary
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Credits summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditsSummary"
+
+  # ────────────────────────────── SPENDING ──────────────────────────────
+  /spending/weekly:
+    get:
+      operationId: getWeeklySpending
+      tags: [spending]
+      summary: Get weekly grouped spending totals (last 4 weeks)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Weekly spending
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeeklySpending"
+
+  /spending/categories:
+    get:
+      operationId: getSpendingCategories
+      tags: [spending]
+      summary: Get spending by category with totals and percentages
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpendingCategory"
+
+  /spending/transactions:
+    get:
+      operationId: getTransactions
+      tags: [spending]
+      summary: Get recent transactions
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 30
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transactions list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+
+  # ────────────────────────────── SOURCES ──────────────────────────────
+  /sources:
+    get:
+      operationId: getSources
+      tags: [sources]
+      summary: Get connected financial sources
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of sources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FinancialSource"
+
+    post:
+      operationId: addSource
+      tags: [sources]
+      summary: Add a new financial source
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddSourceBody"
+      responses:
+        "201":
+          description: Source added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinancialSource"
+
+  /sources/{id}:
+    delete:
+      operationId: removeSource
+      tags: [sources]
+      summary: Remove a connected source
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Source removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  # ────────────────────────────── PROFILE ──────────────────────────────
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get user profile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileBody"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+
+# ────────────────────────────── COMPONENTS ──────────────────────────────
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        statusCode:
+          type: integer
+      required: [message]
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    # Auth
+    RegisterBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        locale:
+          type: string
+          enum: [en, es]
+          default: en
+      required: [name, email, password]
+
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required: [email, password]
+
+    VerifyEmailBody:
+      type: object
+      properties:
+        token:
+          type: string
+      required: [token]
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required: [accessToken, user]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        emailVerified:
+          type: boolean
+        locale:
+          type: string
+          enum: [en, es]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, email, name, emailVerified, locale, createdAt]
+
+    # Dashboard
+    DashboardSummary:
+      type: object
+      properties:
+        balanceGeneral:
+          type: number
+          description: Estimated available balance
+        monthlyIncome:
+          type: number
+        totalDebt:
+          type: number
+        monthlyDebtObligations:
+          type: number
+        nextPayment:
+          $ref: "#/components/schemas/NextPayment"
+        weeklySpendingTotal:
+          type: number
+        debtBurdenPct:
+          type: number
+        freeCashFlow:
+          type: number
+        recommendations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Recommendation"
+      required: [balanceGeneral, monthlyIncome, totalDebt, monthlyDebtObligations, weeklySpendingTotal, debtBurdenPct, freeCashFlow, recommendations]
+
+    NextPayment:
+      type: object
+      properties:
+        creditName:
+          type: string
+        amount:
+          type: number
+        dueDate:
+          type: string
+          format: date
+        daysUntilDue:
+          type: integer
+      required: [creditName, amount, dueDate, daysUntilDue]
+
+    Recommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [info, warning, tip, action]
+        titleEn:
+          type: string
+        titleEs:
+          type: string
+        bodyEn:
+          type: string
+        bodyEs:
+          type: string
+      required: [id, type, titleEn, titleEs, bodyEn, bodyEs]
+
+    # Credits
+    Credit:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [credit_card, personal_loan, auto_loan, student_loan, mortgage, other]
+        balance:
+          type: number
+        originalBalance:
+          type: number
+        apr:
+          type: number
+        monthlyPayment:
+          type: number
+        nextPaymentDate:
+          type: string
+          format: date
+        termMonths:
+          type: integer
+        paidMonths:
+          type: integer
+        priority:
+          type: string
+          enum: [high, medium, low]
+        institution:
+          type: string
+      required: [id, name, type, balance, originalBalance, apr, monthlyPayment, nextPaymentDate, termMonths, paidMonths, priority, institution]
+
+    CreditsSummary:
+      type: object
+      properties:
+        totalMonthlyObligations:
+          type: number
+        totalBalance:
+          type: number
+        highInterestCount:
+          type: integer
+        averageApr:
+          type: number
+        nextPayment:
+          $ref: "#/components/schemas/NextPayment"
+      required: [totalMonthlyObligations, totalBalance, highInterestCount, averageApr, nextPayment]
+
+    # Spending
+    WeeklySpending:
+      type: object
+      properties:
+        weekLabel:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        total:
+          type: number
+        byCategory:
+          type: object
+          additionalProperties:
+            type: number
+      required: [weekLabel, startDate, endDate, total, byCategory]
+
+    SpendingCategory:
+      type: object
+      properties:
+        category:
+          type: string
+        labelEn:
+          type: string
+        labelEs:
+          type: string
+        total:
+          type: number
+        percentage:
+          type: number
+        transactionCount:
+          type: integer
+        icon:
+          type: string
+      required: [category, labelEn, labelEs, total, percentage, transactionCount, icon]
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+        amount:
+          type: number
+        category:
+          type: string
+        institution:
+          type: string
+      required: [id, date, description, amount, category, institution]
+
+    # Sources
+    FinancialSource:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [bank, credit_card, investment, crypto, manual]
+        status:
+          type: string
+          enum: [connected, pending, error, disconnected]
+        lastSync:
+          type: string
+          format: date-time
+        maskedAccount:
+          type: string
+        institution:
+          type: string
+      required: [id, name, type, status, institution]
+
+    AddSourceBody:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [bank, credit_card, investment, crypto, manual]
+        institution:
+          type: string
+      required: [name, type, institution]
+
+    # Profile
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        locale:
+          type: string
+          enum: [en, es]
+        emailVerified:
+          type: boolean
+        monthlyIncome:
+          type: number
+        currency:
+          type: string
+        memberSince:
+          type: string
+          format: date-time
+      required: [userId, name, email, locale, emailVerified, memberSince]
+
+    UpdateProfileBody:
+      type: object
+      properties:
+        name:
+          type: string
+        locale:
+          type: string
+          enum: [en, es]
+        monthlyIncome:
+          type: number
+        currency:
+          type: string
