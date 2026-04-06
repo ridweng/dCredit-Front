@@ -25,10 +25,6 @@ export function VerificationInfoScreen({ route, navigation }: Props) {
         </Text>
       </View>
 
-      <PrimaryButton variant="secondary" onPress={() => Linking.openURL('http://localhost:8025')}>
-        {t('actions.openMailpit')}
-      </PrimaryButton>
-
       <PrimaryButton
         variant="ghost"
         onPress={() => {

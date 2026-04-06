@@ -14,11 +14,11 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(3001),
   DATABASE_HOST: z.string().default('localhost'),
-  DATABASE_PORT: z.coerce.number().int().positive().default(5432),
+  DATABASE_PORT: z.coerce.number().int().positive().default(5433),
   DATABASE_NAME: z.string().default('dcredit'),
   DATABASE_USER: z.string().default('dcredit'),
   DATABASE_PASSWORD: z.string().default('dcredit_dev_password'),
-  DATABASE_URL: z.string().min(1),
+  DATABASE_URL: z.string().min(1).optional(),
   DATABASE_LOGGING: booleanValue.default(false),
   DATABASE_SSL: booleanValue.default(false),
   SMTP_HOST: z.string().default('localhost'),
@@ -47,9 +47,34 @@ export function validateEnv(config: Record<string, unknown>): ValidatedEnv {
     throw new Error(`Invalid environment configuration:\n${details}`);
   }
 
-  return parsed.data;
+  const data = parsed.data;
+
+  return {
+    ...data,
+    DATABASE_URL:
+      data.DATABASE_URL ??
+      buildDatabaseUrl({
+        host: data.DATABASE_HOST,
+        port: data.DATABASE_PORT,
+        name: data.DATABASE_NAME,
+        user: data.DATABASE_USER,
+        password: data.DATABASE_PASSWORD,
+      }),
+  };
 }
 
 export function loadValidatedEnv(): ValidatedEnv {
   return validateEnv(process.env);
+}
+
+function buildDatabaseUrl(input: {
+  host: string;
+  port: number;
+  name: string;
+  user: string;
+  password: string;
+}): string {
+  return `postgresql://${encodeURIComponent(input.user)}:${encodeURIComponent(
+    input.password,
+  )}@${input.host}:${input.port}/${input.name}`;
 }

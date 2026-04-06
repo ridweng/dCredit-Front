@@ -6,6 +6,7 @@ import { Credit } from '../credits/credit.entity';
 import { Installment } from '../credits/installment.entity';
 import { FinancialSource } from '../financial-sources/financial-source.entity';
 import { Transaction } from '../transactions/transaction.entity';
+import { UsersModule } from '../users/users.module';
 import { User } from '../users/user.entity';
 import { VerificationToken } from '../users/verification-token.entity';
 import { AdminApiController } from './admin-api.controller';
@@ -31,6 +32,7 @@ import { UserSearchService } from './user-search.service';
       Installment,
     ]),
     AuthModule,
+    UsersModule,
   ],
   controllers: [AdminController, AdminApiController],
   providers: [

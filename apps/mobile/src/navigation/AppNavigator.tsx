@@ -53,7 +53,13 @@ export function AppNavigator() {
   const { t } = useLanguage();
 
   if (isLoading) {
-    return <LoadingView />;
+    return (
+      <LoadingView
+        fullScreen
+        label={t('states.loadingSession')}
+        hint={t('auth.login.demoHint')}
+      />
+    );
   }
 
   return (
@@ -71,14 +77,6 @@ export function AppNavigator() {
         >
           <AuthStack.Screen name="Login" component={LoginScreen} options={{ title: t('auth.login.title') }} />
           <AuthStack.Screen name="Register" component={RegisterScreen} options={{ title: t('auth.register.title') }} />
-          <AuthStack.Screen
-            name="VerificationInfo"
-            component={VerificationInfoScreen}
-            options={{
-              title: t('auth.verify.title'),
-              headerRight: () => <Text style={{ color: colors.textMuted }}>{t('actions.openMailpit')}</Text>,
-            }}
-          />
         </AuthStack.Navigator>
       )}
     </NavigationContainer>

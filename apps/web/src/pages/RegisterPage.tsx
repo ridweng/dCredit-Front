@@ -50,9 +50,9 @@ export function RegisterPage() {
             <p className="text-sm leading-6 text-emerald-900">{t('auth.register.successBody')}</p>
             <p className="text-sm text-emerald-700">{successMessage}</p>
             <div className="flex flex-wrap gap-3">
-              <a className="inline-flex h-10 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground" href="http://localhost:8025" target="_blank" rel="noreferrer">
+              {/* <a className="inline-flex h-10 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground" href="http://localhost:8025" target="_blank" rel="noreferrer">
                 {t('actions.openMailpit')}
-              </a>
+              </a> */}
               <Link className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground" to="/login">
                 {t('auth.register.goToLogin')}
               </Link>

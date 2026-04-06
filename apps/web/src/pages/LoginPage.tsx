@@ -105,7 +105,7 @@ export function LoginPage() {
                 </Button>
               </form>
 
-              <div className="flex items-center gap-3 rounded-2xl border border-border bg-muted/60 px-4 py-3 text-sm text-muted-foreground">
+              {/* <div className="flex items-center gap-3 rounded-2xl border border-border bg-muted/60 px-4 py-3 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
                 <span>
                   {t('actions.openMailpit')}:{' '}
@@ -113,7 +113,7 @@ export function LoginPage() {
                     http://localhost:8025
                   </a>
                 </span>
-              </div>
+              </div> */}
 
               <p className="text-sm text-muted-foreground">
                 {t('auth.login.noAccount')}{' '}

@@ -2,14 +2,28 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@dcredit/types": ["../../packages/types/src"],
-      "@dcredit/core": ["../../packages/core/src"],
-      "@dcredit/i18n": ["../../packages/i18n/src"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@dcredit/types": [
+        "../../packages/types/src"
+      ],
+      "@dcredit/core": [
+        "../../packages/core/src"
+      ],
+      "@dcredit/i18n": [
+        "../../packages/i18n/src"
+      ]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.d.ts", "expo-env.d.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.d.ts"
+  ]
 }
