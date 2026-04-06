@@ -134,3 +134,5 @@ export function t(locale: Locale, key: string): string {
   }
   return typeof current === 'string' ? current : key;
 }
+
+export * from './web';

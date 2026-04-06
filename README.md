@@ -10,15 +10,14 @@
 dCredit/
 ├── apps/
 │   ├── api/          # NestJS backend API
-│   ├── web/          # React + Vite frontend (production full-stack version)
+│   ├── web/          # Canonical React + Vite frontend connected to NestJS
 │   └── mobile/       # React Native + Expo mobile app
 ├── packages/
 │   ├── types/        # Shared TypeScript domain types
 │   ├── core/         # Shared financial calculation logic (no UI deps)
 │   ├── i18n/         # Shared EN/ES translation dictionaries
 │   └── ui/           # Shared design tokens and style constants
-├── artifacts/
-│   └── dcredit/      # Replit preview — standalone React MVP (mock data, no backend)
+├── artifacts/        # Legacy prototypes and historical references
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
@@ -186,11 +185,16 @@ In production, set real SMTP credentials in `apps/api/.env`.
 
 ---
 
-## Replit Preview
+## Canonical Web App
 
-The `artifacts/dcredit/` app is the standalone Replit preview — a fully functional React frontend with mock data and no backend required. It demonstrates the complete dCredit user experience and is ready to deploy.
+`apps/web` is now the single maintained React frontend.
 
-The `apps/` structure above is the full-stack foundation for the production version.
+- Run it with `pnpm dev:web`
+- Configure the API origin with `apps/web/.env`
+- Default local API origin: `http://localhost:3001`
+- When `VITE_API_URL` is omitted, the Vite dev server proxies `/api` to the local Nest API
+
+The artifact frontends under `artifacts/` remain in git history as migration sources only and are no longer the active web target.
 
 ---
 
@@ -220,6 +224,22 @@ Implemented endpoints under the global `/api` prefix:
 2. The API sends a verification email through Mailpit SMTP.
 3. Open Mailpit at [http://localhost:8025](http://localhost:8025), copy the verification link, and call `POST /api/auth/verify-email` with the token if you want to complete verification via API.
 4. Only verified accounts can log in and receive JWT access tokens.
+
+### Web auth flow
+
+The canonical React app implements:
+
+- `/login`
+- `/register`
+- `/verify-email`
+- protected routes for `/`, `/credits`, `/spending`, `/sources`, and `/profile`
+
+For the web MVP:
+
+- JWT is stored in local storage
+- `GET /api/users/me` rehydrates the session on refresh
+- language switching updates the UI immediately
+- `PATCH /api/users/me` persists the preferred language to the backend
 
 ### Demo users
 
@@ -288,6 +308,8 @@ Protected endpoints for the main dCredit demo features:
   - Returns current-week and previous-week spending totals, grouped by day and category.
 - `GET /api/transactions/categories-summary`
   - Returns categorized spending totals and percentage share by category.
+- `GET /api/transactions?limit=&categoryKey=`
+  - Returns recent transaction insights, optionally filtered by category.
 - `GET /api/credits`
   - Returns all credits with interest rate, monthly payment, next payment date, deferred payment date, and high-interest flags.
 - `GET /api/credits/:id`
@@ -300,6 +322,8 @@ Protected endpoints for the main dCredit demo features:
   - Creates a financial source for the authenticated user. `credentialReference` must be a secure vault reference such as `vault://sources/new-bank/user-123`.
 - `PATCH /api/financial-sources/:id`
   - Updates the source status, provider metadata, or vault reference placeholder.
+- `PATCH /api/users/me`
+  - Updates the authenticated user profile fields currently supported by the web MVP, including `preferredLanguage`.
 
 ### Financial demo data
 

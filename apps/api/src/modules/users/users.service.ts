@@ -19,6 +19,10 @@ interface CreateVerificationTokenInput {
   expiresAt: Date;
 }
 
+interface UpdateCurrentUserInput {
+  preferredLanguage?: PreferredLanguage;
+}
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -93,6 +97,20 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async updateCurrentUser(userId: string, input: UpdateCurrentUserInput): Promise<User> {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new Error(`Unable to load user ${userId}`);
+    }
+
+    if (input.preferredLanguage !== undefined) {
+      user.preferredLanguage = input.preferredLanguage;
+    }
+
+    return this.userRepository.save(user);
   }
 
   countVerificationTokensForUser(userId: string): Promise<number> {

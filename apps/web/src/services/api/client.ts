@@ -1,0 +1,62 @@
+export class ApiError extends Error {
+  status: number;
+  data?: unknown;
+
+  constructor(message: string, status: number, data?: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.data = data;
+  }
+}
+
+const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/+$/, '');
+const TOKEN_STORAGE_KEY = 'dcredit_token';
+
+function buildApiUrl(path: string) {
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  return API_ORIGIN ? `${API_ORIGIN}/api${normalized}` : `/api${normalized}`;
+}
+
+function getStoredToken() {
+  return window.localStorage.getItem(TOKEN_STORAGE_KEY);
+}
+
+export interface ApiRequestOptions extends RequestInit {
+  token?: string | null;
+}
+
+export async function apiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
+  const headers = new Headers(options.headers);
+  const token = options.token ?? getStoredToken();
+
+  if (!headers.has('Content-Type') && options.body) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  const response = await fetch(buildApiUrl(path), {
+    ...options,
+    headers,
+  });
+
+  const contentType = response.headers.get('content-type');
+  const isJson = contentType?.includes('application/json');
+  const data = isJson ? await response.json() : await response.text();
+
+  if (!response.ok) {
+    const message =
+      typeof data === 'object' && data !== null && 'message' in data
+        ? String((data as { message: unknown }).message)
+        : response.statusText || 'Request failed';
+
+    throw new ApiError(message, response.status, data);
+  }
+
+  return data as T;
+}
+
+export { TOKEN_STORAGE_KEY };

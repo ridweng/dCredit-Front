@@ -1,29 +1,57 @@
-/* apps/web/src/index.css
- * Global styles for the dCredit web app.
- * In the production version, replace this with your design system (Tailwind, CSS modules, etc.)
- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
-*, *::before, *::after {
-  box-sizing: border-box;
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-card: hsl(var(--card));
+  --color-card-border: hsl(var(--card-border));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --font-sans: 'Inter', sans-serif;
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: #f8fafc;
-  color: #1e293b;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
+:root {
+  --background: 210 20% 97%;
+  --foreground: 215 28% 17%;
+  --border: 214 20% 88%;
+  --input: 214 20% 84%;
+  --card: 0 0% 100%;
+  --card-border: 214 20% 90%;
+  --muted: 210 16% 93%;
+  --muted-foreground: 215 14% 45%;
+  --primary: 180 55% 38%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 180 30% 92%;
+  --secondary-foreground: 180 55% 25%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
 }
 
-code {
-  background: #f1f5f9;
-  padding: 0.15em 0.4em;
-  border-radius: 4px;
-  font-size: 0.875em;
-  font-family: 'Menlo', 'Consolas', monospace;
-}
+@layer base {
+  * {
+    @apply border-border;
+  }
 
-a {
-  color: #0f766e;
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-background font-sans text-foreground antialiased;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
 }

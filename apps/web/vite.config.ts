@@ -1,16 +1,21 @@
+import path from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
     port: 5173,
     host: '0.0.0.0',
     proxy: {
-      // Proxy /api calls to the NestJS backend during development
       '/api': {
-        target: `http://localhost:${process.env.VITE_API_PORT ?? 3001}`,
+        target: process.env.VITE_API_URL ?? 'http://localhost:3001',
         changeOrigin: true,
       },
     },

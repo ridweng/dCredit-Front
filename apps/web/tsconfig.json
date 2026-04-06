@@ -17,6 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./src/*"],
       "@dcredit/types": ["../../packages/types/src"],
       "@dcredit/core": ["../../packages/core/src"],
       "@dcredit/i18n": ["../../packages/i18n/src"]
