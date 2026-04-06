@@ -30,6 +30,40 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
 
+## Full-Stack Monorepo Structure
+
+```
+dCredit/
+├── apps/
+│   ├── api/          # NestJS backend (TypeScript, PostgreSQL, TypeORM, Mailpit)
+│   ├── web/          # React + Vite frontend (production full-stack version)
+│   └── mobile/       # React Native + Expo mobile app
+├── packages/
+│   ├── types/        # @dcredit/types — shared domain interfaces (User, DebtProduct, etc.)
+│   ├── core/         # @dcredit/core — shared financial logic (no UI deps)
+│   ├── i18n/         # @dcredit/i18n — shared EN/ES translations
+│   └── ui/           # @dcredit/ui — shared design tokens
+├── artifacts/
+│   └── dcredit/      # Replit preview — standalone React MVP (no backend required)
+├── docker-compose.yml  # postgres + nestjs api + mailpit
+├── .env.example
+└── README.md
+```
+
+### Root Scripts
+- `pnpm dev:api` — starts `apps/api` (NestJS)
+- `pnpm dev:web` — starts `apps/web` (React + Vite)
+- `pnpm dev:mobile` — starts `apps/mobile` (Expo)
+- `pnpm docker:up` — starts Docker stack (postgres, api, mailpit)
+- `pnpm docker:down` — stops Docker stack
+
+### Service Ports
+- NestJS API: `localhost:3001/api`
+- React web: `localhost:5173`
+- Mailpit UI: `localhost:8025`
+- Mailpit SMTP: `localhost:1025`
+- PostgreSQL: `localhost:5432`
+
 ## Artifacts
 
 ### dCredit (`artifacts/dcredit/`) — preview path `/`

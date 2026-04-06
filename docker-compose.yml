@@ -1,0 +1,86 @@
+version: '3.9'
+
+services:
+  # ─────────────────────────────────────────
+  # PostgreSQL
+  # ─────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: dcredit-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dcredit
+      POSTGRES_USER: dcredit
+      POSTGRES_PASSWORD: dcredit_dev_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./apps/api/db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dcredit -d dcredit']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # Mailpit — SMTP catch-all + Web UI
+  # ─────────────────────────────────────────
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: dcredit-mailpit
+    restart: unless-stopped
+    ports:
+      - '1025:1025'   # SMTP — configure apps/api SMTP_PORT=1025
+      - '8025:8025'   # Web UI — open http://localhost:8025
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--spider', 'http://localhost:8025']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ─────────────────────────────────────────
+  # NestJS API
+  # ─────────────────────────────────────────
+  api:
+    container_name: dcredit-api
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: dcredit
+      DATABASE_USER: dcredit
+      DATABASE_PASSWORD: dcredit_dev_password
+      DATABASE_URL: postgresql://dcredit:dcredit_dev_password@postgres:5432/dcredit
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_FROM: noreply@dcredit.local
+      WEB_URL: http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    volumes:
+      - ./apps/api:/app
+      - /app/node_modules
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:3001/api/health || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgres_data:
+    name: dcredit_postgres_data

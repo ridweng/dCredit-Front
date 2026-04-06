@@ -1,0 +1,29 @@
+/* apps/web/src/index.css
+ * Global styles for the dCredit web app.
+ * In the production version, replace this with your design system (Tailwind, CSS modules, etc.)
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #1e293b;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+code {
+  background: #f1f5f9;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-family: 'Menlo', 'Consolas', monospace;
+}
+
+a {
+  color: #0f766e;
+}

@@ -1,0 +1,88 @@
+Create the foundation for a full-stack monorepo for dCredit and do not skip any required technology.
+
+MANDATORY STACK
+- Frontend web: React + TypeScript
+- Mobile app: React Native + TypeScript
+- Backend API: NestJS
+- Database: PostgreSQL
+- Email testing / SMTP: Mailpit
+- Backend runtime via Docker Compose:
+  - postgres
+  - nest api
+  - mailpit
+
+IMPORTANT
+Keep these technologies throughout the whole project:
+- NestJS server
+- React web
+- React Native app
+- PostgreSQL
+- Mailpit
+- Docker Compose for postgres, nest, and mailpit
+
+GOAL FOR THIS PHASE
+Only create the monorepo structure, package/workspace setup, Docker Compose foundation, environment files, and README starter. Do not build business features yet.
+
+CREATE A MONOREPO STRUCTURE LIKE:
+- apps/api
+- apps/web
+- apps/mobile
+- packages/types
+- packages/core
+- packages/i18n
+- packages/ui (if useful)
+
+REQUIREMENTS
+- Use TypeScript across the repo
+- Keep project structure clean and scalable
+- Make it Replit-friendly
+- Add root package/workspace config
+- Add scripts at root level for common dev tasks
+- Add .env.example files for api, web, and mobile
+- Add docker-compose.yml with postgres, nest api, and mailpit services
+- Add README with initial setup instructions
+
+DOCKER COMPOSE REQUIREMENTS
+Include:
+- postgres service
+- api service
+- mailpit service
+- ports
+- volumes
+- environment variables
+- health checks if reasonable
+
+POSTGRES REQUIREMENTS
+Use sensible defaults for local dev.
+Prepare for migrations later.
+
+MAILPIT REQUIREMENTS
+Expose SMTP and web UI ports.
+Document them in README.
+
+WEB REQUIREMENTS
+Scaffold a React + TypeScript app using Vite.
+
+MOBILE REQUIREMENTS
+Scaffold a React Native + TypeScript app structure suitable for later API integration.
+If full runnable React Native is too much for this phase, create a real folder structure and starter files rather than fake placeholders.
+
+API REQUIREMENTS
+Scaffold a NestJS app inside apps/api.
+
+DELIVERABLES FOR THIS PHASE
+- monorepo structure
+- root package/workspace config
+- docker-compose.yml
+- starter apps for api, web, mobile
+- .env.example files
+- initial README
+- root scripts for:
+  - dev:web
+  - dev:api
+  - dev:mobile
+  - docker:up
+  - docker:down
+
+Do not implement authentication or financial features yet.
+Return the codebase file by file.
