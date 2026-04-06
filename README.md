@@ -196,6 +196,44 @@ In production, set real SMTP credentials in `apps/api/.env`.
 
 The artifact frontends under `artifacts/` remain in git history as migration sources only and are no longer the active web target.
 
+## Mobile App
+
+`apps/mobile` now mirrors the web product architecture with:
+
+- auth flow screens: login, register, verification info
+- authenticated tabs: Home, Credits, Spending, Sources, Profile
+- React Query for API-ready server state
+- React Navigation for auth stack + bottom tabs
+- shared bilingual strings from `@dcredit/i18n`
+- shared domain packages available from `@dcredit/core` and `@dcredit/types`
+
+Mobile structure:
+
+- `apps/mobile/src/navigation`
+- `apps/mobile/src/screens`
+- `apps/mobile/src/context`
+- `apps/mobile/src/services/api`
+- `apps/mobile/src/components`
+- `apps/mobile/src/theme`
+
+Configure the API host with:
+
+```bash
+cp apps/mobile/.env.example apps/mobile/.env
+```
+
+Then set:
+
+```bash
+EXPO_PUBLIC_API_URL=http://localhost:3001
+```
+
+Important for real devices/emulators:
+
+- `localhost` usually will not reach your Nest API from a phone
+- use your machine LAN IP, Expo tunnel, or Android reverse proxying as needed
+- verification emails still go through Mailpit, and the current mobile verification screen is informational until native deep linking is added
+
 ---
 
 ## Backend Foundation
