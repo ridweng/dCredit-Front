@@ -4,6 +4,7 @@
     "slug": "dcredit-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "newArchEnabled": true,
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
