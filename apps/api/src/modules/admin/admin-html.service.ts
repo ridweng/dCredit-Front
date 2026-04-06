@@ -264,10 +264,205 @@ export class AdminHtmlService {
         padding: 10px 12px;
         background: #fff;
       }
-      .schema-grid {
+      code {
+        background: #f2f5fb;
+        color: #334155;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      .schema-shell {
         display: grid;
         gap: 16px;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      .schema-layout {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.2fr);
+      }
+      .schema-map {
+        position: relative;
+        max-height: 72vh;
+        overflow: auto;
+        padding: 6px;
+        background:
+          linear-gradient(90deg, rgba(221, 229, 240, 0.35) 1px, transparent 1px) 0 0 / 28px 28px,
+          linear-gradient(rgba(221, 229, 240, 0.35) 1px, transparent 1px) 0 0 / 28px 28px,
+          #fbfdff;
+        border-radius: 16px;
+      }
+      .schema-diagram {
+        position: relative;
+        min-height: 640px;
+      }
+      .schema-links {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: visible;
+      }
+      .schema-edge {
+        fill: none;
+        stroke: rgba(96, 112, 138, 0.38);
+        stroke-width: 2;
+        transition: stroke 0.16s ease, stroke-width 0.16s ease, opacity 0.16s ease;
+      }
+      .schema-edge.active {
+        stroke: rgba(33, 95, 208, 0.72);
+        stroke-width: 3;
+      }
+      .schema-edge-label {
+        font-size: 11px;
+        fill: #64748b;
+      }
+      .schema-node-layer {
+        position: absolute;
+        inset: 0;
+      }
+      .schema-table-node {
+        position: absolute;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 16px;
+        padding: 14px;
+        cursor: pointer;
+        transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+        box-shadow: 0 10px 20px rgba(23, 33, 50, 0.06);
+      }
+      .schema-table-node:hover {
+        transform: translateY(-1px);
+        border-color: rgba(33, 95, 208, 0.35);
+      }
+      .schema-table-node.active {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(33, 95, 208, 0.12);
+        background: #f8fbff;
+      }
+      .schema-table-header {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .schema-table-header h3 {
+        margin: 0 0 4px;
+      }
+      .schema-node-columns {
+        margin-top: 10px;
+        display: grid;
+        gap: 6px;
+      }
+      .schema-node-column {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 6px 8px;
+        border-radius: 10px;
+        background: #f8fbff;
+        border: 1px solid #e8eef8;
+      }
+      .schema-node-column code {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .schema-node-column-flags {
+        display: inline-flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .schema-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .schema-stat {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        padding: 5px 10px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .section-kicker {
+        display: inline-flex;
+        margin-bottom: 10px;
+        border-radius: 999px;
+        background: rgba(33, 95, 208, 0.12);
+        color: var(--primary);
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .schema-column-table td,
+      .schema-column-table th {
+        font-size: 13px;
+      }
+      .column-flags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .column-flag {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+      }
+      .column-flag.pk {
+        background: rgba(31, 139, 76, 0.12);
+        color: var(--green);
+      }
+      .column-flag.fk {
+        background: rgba(33, 95, 208, 0.12);
+        color: var(--primary);
+      }
+      .column-flag.unique {
+        background: rgba(200, 129, 26, 0.12);
+        color: var(--amber);
+      }
+      .column-flag.nullable {
+        background: rgba(96, 112, 138, 0.12);
+        color: var(--muted);
+      }
+      .schema-detail-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        margin-bottom: 16px;
+      }
+      .schema-detail-card {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .schema-detail-card strong {
+        display: block;
+        font-size: 22px;
+        margin-top: 4px;
+      }
+      .relationship-list {
+        display: grid;
+        gap: 10px;
+      }
+      .relationship-item {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .relationship-item strong {
+        display: block;
+        margin-bottom: 4px;
       }
       .pill-list {
         display: flex;
@@ -303,6 +498,8 @@ export class AdminHtmlService {
       @media (max-width: 900px) {
         .split { grid-template-columns: 1fr; }
         .progress-row { grid-template-columns: 1fr; }
+        .schema-layout { grid-template-columns: 1fr; }
+        .schema-map { max-height: none; }
       }
     </style>
   </head>
@@ -336,7 +533,7 @@ export class AdminHtmlService {
       <section id="backend-docs" class="section"><div class="loading">Loading backend docs...</div></section>
     </main>
     <script>
-      const state = { users: [], selectedUserId: null };
+      const state = { users: [], selectedUserId: null, schema: null, selectedSchemaTableName: null };
 
       function money(value) {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value || 0));
@@ -359,6 +556,285 @@ export class AdminHtmlService {
           .replaceAll('>', '&gt;')
           .replaceAll('"', '&quot;')
           .replaceAll("'", '&#39;');
+      }
+
+      function columnFlag(label, kind) {
+        return '<span class="column-flag ' + kind + '">' + escapeHtml(label) + '</span>';
+      }
+
+      function buildSchemaLayout(schema) {
+        const nodeWidth = 290;
+        const nodeHeight = 214;
+        const horizontalGap = 110;
+        const verticalGap = 36;
+        const padding = 28;
+        const edges = schema.overview.relationships || [];
+        const adjacency = new Map();
+        const incomingCount = new Map();
+
+        schema.tables.forEach((table) => {
+          adjacency.set(table.name, []);
+          incomingCount.set(table.name, 0);
+        });
+
+        edges.forEach((edge) => {
+          if (!adjacency.has(edge.fromTable)) {
+            adjacency.set(edge.fromTable, []);
+          }
+          adjacency.get(edge.fromTable).push(edge.toTable);
+          incomingCount.set(edge.toTable, (incomingCount.get(edge.toTable) || 0) + 1);
+        });
+
+        const roots = schema.tables
+          .map((table) => table.name)
+          .filter((tableName) => (incomingCount.get(tableName) || 0) === 0);
+        const queue = roots.length > 0 ? [...roots] : schema.tables.map((table) => table.name);
+        const depthMap = new Map(queue.map((tableName) => [tableName, 0]));
+
+        while (queue.length > 0) {
+          const current = queue.shift();
+          const currentDepth = depthMap.get(current) || 0;
+          (adjacency.get(current) || []).forEach((next) => {
+            const nextDepth = currentDepth + 1;
+            if (!depthMap.has(next) || nextDepth > depthMap.get(next)) {
+              depthMap.set(next, nextDepth);
+              queue.push(next);
+            }
+          });
+        }
+
+        schema.tables.forEach((table) => {
+          if (!depthMap.has(table.name)) {
+            depthMap.set(table.name, 0);
+          }
+        });
+
+        const maxDepth = Math.max(...Array.from(depthMap.values()), 0);
+        const columns = Array.from({ length: maxDepth + 1 }, () => []);
+
+        schema.tables
+          .slice()
+          .sort((left, right) => {
+            const depthDelta = (depthMap.get(left.name) || 0) - (depthMap.get(right.name) || 0);
+            return depthDelta !== 0 ? depthDelta : left.name.localeCompare(right.name);
+          })
+          .forEach((table) => {
+            columns[depthMap.get(table.name) || 0].push(table);
+          });
+
+        const positions = new Map();
+        let diagramHeight = padding * 2;
+
+        columns.forEach((columnTables, columnIndex) => {
+          columnTables.forEach((table, rowIndex) => {
+            const x = padding + columnIndex * (nodeWidth + horizontalGap);
+            const y = padding + rowIndex * (nodeHeight + verticalGap);
+            positions.set(table.name, { x, y, width: nodeWidth, height: nodeHeight });
+            diagramHeight = Math.max(diagramHeight, y + nodeHeight + padding);
+          });
+        });
+
+        const diagramWidth = padding * 2 + columns.length * nodeWidth + Math.max(columns.length - 1, 0) * horizontalGap;
+
+        return {
+          nodeWidth,
+          nodeHeight,
+          width: Math.max(diagramWidth, 860),
+          height: Math.max(diagramHeight, 640),
+          positions,
+        };
+      }
+
+      function renderSchemaDiagram(schema) {
+        const layout = buildSchemaLayout(schema);
+        const edgeMarkup = schema.overview.relationships.map((relation) => {
+          const from = layout.positions.get(relation.fromTable);
+          const to = layout.positions.get(relation.toTable);
+          if (!from || !to) return '';
+          const startX = from.x + from.width;
+          const startY = from.y + from.height / 2;
+          const endX = to.x;
+          const endY = to.y + to.height / 2;
+          const controlOffset = Math.max(56, Math.abs(endX - startX) / 2);
+          const path = 'M ' + startX + ' ' + startY + ' C ' + (startX + controlOffset) + ' ' + startY + ', ' + (endX - controlOffset) + ' ' + endY + ', ' + endX + ' ' + endY;
+          const midX = (startX + endX) / 2;
+          const midY = (startY + endY) / 2 - 8;
+
+          return \`
+            <g data-schema-edge data-from-table="\${escapeHtml(relation.fromTable)}" data-to-table="\${escapeHtml(relation.toTable)}">
+              <path class="schema-edge" d="\${path}" />
+              <text class="schema-edge-label" x="\${midX}" y="\${midY}" text-anchor="middle">\${escapeHtml(relation.fromColumn)} -> \${escapeHtml(relation.toColumn)}</text>
+            </g>
+          \`;
+        }).join('');
+
+        const nodeMarkup = schema.tables.map((table) => {
+          const position = layout.positions.get(table.name);
+          if (!position) return '';
+          const previewColumns = table.columns.slice(0, 4);
+          return \`
+            <div
+              class="schema-table-node"
+              data-schema-table="\${escapeHtml(table.name)}"
+              style="left:\${position.x}px;top:\${position.y}px;width:\${position.width}px;min-height:\${position.height}px"
+            >
+              <div class="schema-table-header">
+                <div>
+                  <h3>\${escapeHtml(table.name)}</h3>
+                  <div class="muted">\${escapeHtml(table.purpose)}</div>
+                </div>
+                <div class="schema-stats">
+                  <span class="schema-stat">PK \${table.primaryKeys.length}</span>
+                  <span class="schema-stat">FK \${table.foreignKeys.length}</span>
+                </div>
+              </div>
+              <div class="pill-list" style="margin-bottom:10px">
+                <span class="pill">Cols: \${table.columns.length}</span>
+                <span class="pill">Rows: \${Number(table.estimatedRows || 0).toLocaleString()}</span>
+              </div>
+              <div class="schema-node-columns">
+                \${previewColumns.map((column) => \`
+                  <div class="schema-node-column">
+                    <code>\${escapeHtml(column.name)}</code>
+                    <span class="schema-node-column-flags">
+                      \${column.isPrimaryKey ? columnFlag('PK', 'pk') : ''}
+                      \${column.isForeignKey ? columnFlag('FK', 'fk') : ''}
+                    </span>
+                  </div>
+                \`).join('')}
+                \${table.columns.length > previewColumns.length ? \`<div class="muted">+\${table.columns.length - previewColumns.length} more columns</div>\` : ''}
+              </div>
+            </div>
+          \`;
+        }).join('');
+
+        return \`
+          <div class="schema-diagram" style="width:\${layout.width}px;height:\${layout.height}px">
+            <svg class="schema-links" viewBox="0 0 \${layout.width} \${layout.height}" preserveAspectRatio="xMinYMin meet">
+              \${edgeMarkup}
+            </svg>
+            <div class="schema-node-layer">
+              \${nodeMarkup}
+            </div>
+          </div>
+        \`;
+      }
+
+      function renderSchemaDetail(table) {
+        return \`
+          <span class="section-kicker">Table inspector</span>
+          <h2>\${escapeHtml(table.name)}</h2>
+          <p class="muted">\${escapeHtml(table.purpose)}</p>
+          <p class="muted" style="margin-top:-4px">\${escapeHtml(table.notes)}</p>
+          <div class="schema-detail-grid">
+            <div class="schema-detail-card">
+              <div class="muted">Estimated rows</div>
+              <strong>\${Number(table.estimatedRows || 0).toLocaleString()}</strong>
+            </div>
+            <div class="schema-detail-card">
+              <div class="muted">Total size</div>
+              <strong>\${escapeHtml(table.totalSizeLabel)}</strong>
+            </div>
+            <div class="schema-detail-card">
+              <div class="muted">Primary keys</div>
+              <strong>\${table.primaryKeys.length}</strong>
+            </div>
+            <div class="schema-detail-card">
+              <div class="muted">Foreign keys</div>
+              <strong>\${table.foreignKeys.length}</strong>
+            </div>
+          </div>
+          <div class="pill-list" style="margin-bottom:16px">
+            \${table.relatedTables.length === 0
+              ? '<span class="pill">No direct relationships</span>'
+              : table.relatedTables.map((relatedTable) => \`<span class="pill">\${escapeHtml(relatedTable)}</span>\`).join('')}
+          </div>
+          <h3>Columns</h3>
+          <table class="schema-column-table">
+            <thead>
+              <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Flags</th>
+                <th>Default</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              \${table.columns.map((column) => \`
+                <tr>
+                  <td><code>\${escapeHtml(column.name)}</code></td>
+                  <td>\${escapeHtml(column.dataType)}</td>
+                  <td>
+                    <div class="column-flags">
+                      \${column.isPrimaryKey ? columnFlag('PK', 'pk') : ''}
+                      \${column.isForeignKey ? columnFlag('FK', 'fk') : ''}
+                      \${column.isUnique ? columnFlag('UNIQUE', 'unique') : ''}
+                      \${column.nullable ? columnFlag('NULL', 'nullable') : ''}
+                    </div>
+                  </td>
+                  <td>\${column.defaultValue ? \`<code>\${escapeHtml(column.defaultValue)}</code>\` : '<span class="muted">None</span>'}</td>
+                  <td>\${column.references
+                    ? \`<code>\${escapeHtml(column.references.table)}.\${escapeHtml(column.references.column)}</code><br /><span class="muted">ON UPDATE \${escapeHtml(column.references.updateRule || 'NO ACTION')} · ON DELETE \${escapeHtml(column.references.deleteRule || 'NO ACTION')}</span>\`
+                    : '<span class="muted">-</span>'}</td>
+                </tr>
+              \`).join('')}
+            </tbody>
+          </table>
+          <div class="split" style="margin-top:16px">
+            <article class="card" style="padding:0;border:0;box-shadow:none;background:transparent">
+              <h3>Outgoing relationships</h3>
+              \${table.foreignKeys.length === 0
+                ? '<div class="empty">This table does not reference other tables.</div>'
+                : \`<div class="relationship-list">
+                    \${table.foreignKeys.map((relation) => \`
+                      <div class="relationship-item">
+                        <strong><code>\${escapeHtml(relation.fromTable)}.\${escapeHtml(relation.fromColumn)}</code> -> <code>\${escapeHtml(relation.toTable)}.\${escapeHtml(relation.toColumn)}</code></strong>
+                        <div class="muted">\${escapeHtml(relation.constraintName)}</div>
+                        <div class="muted">ON UPDATE \${escapeHtml(relation.updateRule || 'NO ACTION')} · ON DELETE \${escapeHtml(relation.deleteRule || 'NO ACTION')}</div>
+                      </div>
+                    \`).join('')}
+                  </div>\`}
+            </article>
+            <article class="card" style="padding:0;border:0;box-shadow:none;background:transparent">
+              <h3>Referenced by</h3>
+              \${table.incomingForeignKeys.length === 0
+                ? '<div class="empty">No other tables currently reference this table.</div>'
+                : \`<div class="relationship-list">
+                    \${table.incomingForeignKeys.map((relation) => \`
+                      <div class="relationship-item">
+                        <strong><code>\${escapeHtml(relation.fromTable)}.\${escapeHtml(relation.fromColumn)}</code> -> <code>\${escapeHtml(relation.toTable)}.\${escapeHtml(relation.toColumn)}</code></strong>
+                        <div class="muted">\${escapeHtml(relation.constraintName)}</div>
+                      </div>
+                    \`).join('')}
+                  </div>\`}
+            </article>
+          </div>
+          <h3 style="margin-top:16px">Indexes</h3>
+          \${table.indexes.length === 0
+            ? '<div class="empty">No indexes discovered.</div>'
+            : '<pre>' + escapeHtml(table.indexes.map((index) => index.definition).join('\\n\\n')) + '</pre>'}
+        \`;
+      }
+
+      function selectSchemaTable(tableName) {
+        if (!state.schema) return;
+        const table = state.schema.tables.find((entry) => entry.name === tableName) || state.schema.tables[0];
+        if (!table) return;
+        state.selectedSchemaTableName = table.name;
+        document.querySelectorAll('[data-schema-table]').forEach((node) => {
+          node.classList.toggle('active', node.getAttribute('data-schema-table') === table.name);
+        });
+        document.querySelectorAll('[data-schema-edge]').forEach((edge) => {
+          const isConnected =
+            edge.getAttribute('data-from-table') === table.name ||
+            edge.getAttribute('data-to-table') === table.name;
+          edge.querySelector('.schema-edge')?.classList.toggle('active', isConnected);
+        });
+        const panel = document.getElementById('schema-detail-panel');
+        if (panel) {
+          panel.innerHTML = renderSchemaDetail(table);
+        }
       }
 
       async function fetchJson(path) {
@@ -628,33 +1104,54 @@ export class AdminHtmlService {
       async function loadDatabase() {
         const data = await fetchJson('/admin/database');
         if (!data) return;
+        state.schema = data;
+        if (!state.selectedSchemaTableName && data.tables[0]) {
+          state.selectedSchemaTableName = data.tables[0].name;
+        }
         const section = document.getElementById('database');
         section.innerHTML = \`
           <article class="card" style="margin-bottom:16px">
+            <span class="section-kicker">Live Postgres schema</span>
             <h2>Database overview</h2>
             <p class="muted">\${escapeHtml(data.overview.summary)}</p>
             <div class="pill-list">
-              \${data.overview.relationships.map((relation) => \`<span class="pill">\${escapeHtml(relation)}</span>\`).join('')}
+              <span class="pill">Generated: \${dateTime(data.generatedAt)}</span>
+              <span class="pill">Tables: \${data.overview.tableCount}</span>
+              <span class="pill">Relationships: \${data.overview.relationshipCount}</span>
+              <span class="pill">Source: \${escapeHtml(data.source)}</span>
             </div>
           </article>
-          <div class="schema-grid">
-            \${data.tables.map((table) => \`
-              <article class="card">
-                <h3>\${escapeHtml(table.name)}</h3>
-                <p class="muted">\${escapeHtml(table.purpose)}</p>
-                <strong>Important columns</strong>
-                <div class="pill-list" style="margin:8px 0 12px">
-                  \${table.importantColumns.map((column) => \`<span class="pill">\${escapeHtml(column)}</span>\`).join('')}
-                </div>
-                <strong>Relations</strong>
-                <div class="pill-list" style="margin:8px 0 12px">
-                  \${table.relations.map((relation) => \`<span class="pill">\${escapeHtml(relation)}</span>\`).join('')}
-                </div>
-                <div class="muted">\${escapeHtml(table.notes)}</div>
+          <div class="schema-shell">
+            <div class="schema-layout">
+              <article class="card schema-map">
+                \${renderSchemaDiagram(data)}
               </article>
-            \`).join('')}
+              <article class="card" id="schema-detail-panel">
+                <div class="loading">Select a table to inspect its columns, keys, and live database metadata.</div>
+              </article>
+            </div>
+            <article class="card">
+              <h3>Relationship map</h3>
+              <div class="relationship-list">
+                \${data.overview.relationships.length === 0
+                  ? '<div class="empty">No foreign-key relationships were discovered.</div>'
+                  : data.overview.relationships.map((relation) => \`
+                      <div class="relationship-item">
+                        <strong><code>\${escapeHtml(relation.fromTable)}.\${escapeHtml(relation.fromColumn)}</code> -> <code>\${escapeHtml(relation.toTable)}.\${escapeHtml(relation.toColumn)}</code></strong>
+                        <div class="muted">\${escapeHtml(relation.constraintName)}</div>
+                        <div class="muted">ON UPDATE \${escapeHtml(relation.updateRule || 'NO ACTION')} · ON DELETE \${escapeHtml(relation.deleteRule || 'NO ACTION')}</div>
+                      </div>
+                    \`).join('')}
+              </div>
+            </article>
           </div>
         \`;
+        section.querySelectorAll('[data-schema-table]').forEach((node) => {
+          node.addEventListener('click', () => {
+            selectSchemaTable(node.getAttribute('data-schema-table'));
+          });
+        });
+        selectSchemaTable(state.selectedSchemaTableName);
       }
 
       async function loadBackendDocs() {
