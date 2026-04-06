@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "dCredit Mobile",
+    "slug": "dcredit-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.workspace.dcreditmobile"
+    },
+    "android": {
+      "package": "com.workspace.dcreditmobile"
+    }
+  }
+}

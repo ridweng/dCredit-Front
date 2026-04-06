@@ -30,6 +30,12 @@ async function buildAll() {
     external: [
       "*.node",
       "sharp",
+      "class-transformer",
+      "class-validator",
+      "@nestjs/microservices",
+      "@nestjs/microservices/*",
+      "@nestjs/websockets",
+      "@nestjs/websockets/*",
       "better-sqlite3",
       "sqlite3",
       "canvas",

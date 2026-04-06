@@ -10,7 +10,8 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Node.js version**: 24
 - **Package manager**: pnpm
 - **TypeScript version**: 5.9
-- **API framework**: Express 5
+- **API framework**: NestJS
+- **Mobile shell**: Expo + React Native WebView
 - **Database**: PostgreSQL + Drizzle ORM
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
@@ -23,6 +24,9 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
+- `PORT=5173 BASE_PATH=/ pnpm --filter @workspace/dcredit dev` — run the Vite app for browser + WebView development
+- `PORT=3001 pnpm --filter @workspace/api-server dev` — run the Nest API server locally
+- `EXPO_PUBLIC_WEB_APP_URL=http://127.0.0.1:5173 pnpm --filter @workspace/dcredit-mobile ios` — launch the Expo shell in the iPhone simulator
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
 
@@ -48,3 +52,14 @@ A bilingual (EN/ES) fintech MVP that helps salaried professionals understand the
 - To add real bank APIs: replace `mockData.ts` imports in `FinancialContext.tsx`
 - Language switching is instant via React context + localStorage
 - Business logic in `src/engine/` has zero browser/React dependencies
+
+### dCredit Mobile (`artifacts/dcredit-mobile/`)
+An Expo shell that loads the Vite app in a native `WebView`.
+
+**Local workflow**
+- Start web: `PORT=5173 BASE_PATH=/ pnpm --filter @workspace/dcredit dev`
+- Start API: `PORT=3001 pnpm --filter @workspace/api-server dev`
+- Start iOS shell: `EXPO_PUBLIC_WEB_APP_URL=http://127.0.0.1:5173 pnpm --filter @workspace/dcredit-mobile ios`
+
+### API Server (`artifacts/api-server/`)
+A Nest-based API server that preserves the existing `/api/healthz` contract.
