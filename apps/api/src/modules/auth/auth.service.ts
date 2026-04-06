@@ -16,6 +16,7 @@ import { LoginRequestDto } from './dto/login-request.dto';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { VerificationStatusDto } from './dto/verification-status.dto';
 
 const PASSWORD_HASH_ROUNDS = 10;
 const VERIFICATION_TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
@@ -33,12 +34,30 @@ export class AuthService {
 
   async register(body: RegisterRequestDto) {
     const existingUser = await this.usersService.findByEmail(body.email);
+    const passwordHash = await hash(body.password, PASSWORD_HASH_ROUNDS);
 
     if (existingUser) {
-      throw new ConflictException('Email is already registered.');
+      if (existingUser.emailVerified || existingUser.isAdmin) {
+        throw new ConflictException('Email is already registered.');
+      }
+
+      const reclaimedUser = await this.usersService.reclaimUnverifiedUser(existingUser, {
+        email: body.email,
+        passwordHash,
+        fullName: body.fullName,
+        preferredLanguage: body.preferredLanguage,
+      });
+
+      const verificationToken = await this.issueVerificationToken(reclaimedUser);
+      await this.sendVerificationEmail(reclaimedUser, verificationToken.token);
+
+      return {
+        message:
+          'An unverified registration already existed for this email. It has been replaced and a new verification email was sent.',
+        user: this.usersService.toSafeUser(reclaimedUser),
+      };
     }
 
-    const passwordHash = await hash(body.password, PASSWORD_HASH_ROUNDS);
     const user = await this.usersService.createUser({
       email: body.email,
       passwordHash,
@@ -86,7 +105,11 @@ export class AuthService {
   }
 
   async verifyEmail(body: VerifyEmailDto) {
-    const verificationToken = await this.usersService.findVerificationTokenWithUser(body.token);
+    return this.verifyEmailToken(body.token);
+  }
+
+  async verifyEmailToken(token: string) {
+    const verificationToken = await this.usersService.findVerificationTokenWithUser(token);
     const now = new Date();
 
     if (!verificationToken || verificationToken.usedAt || verificationToken.expiresAt <= now) {
@@ -123,6 +146,14 @@ export class AuthService {
     };
   }
 
+  async getVerificationStatus(body: VerificationStatusDto) {
+    const user = await this.usersService.findByEmail(body.email);
+
+    return {
+      verified: Boolean(user?.emailVerified),
+    };
+  }
+
   private async issueVerificationToken(user: User) {
     return this.usersService.createVerificationToken({
       userId: user.id,
@@ -141,7 +172,7 @@ export class AuthService {
 
   private buildVerificationUrl(token: string): string {
     const baseUrl = this.configService
-      .get<string>('app.webUrl', 'http://localhost:5173')
+      .get<string>('app.apiUrl', 'http://localhost:3001')
       .replace(/\/+$/, '');
 
     return `${baseUrl}/verify-email?token=${encodeURIComponent(token)}`;

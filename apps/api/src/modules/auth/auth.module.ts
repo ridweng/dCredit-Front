@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
 import { AuthController } from './auth.controller';
+import { PublicVerificationController } from './public-verification.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -24,7 +25,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     UsersModule,
     EmailModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, PublicVerificationController],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService, JwtModule, PassportModule],
 })

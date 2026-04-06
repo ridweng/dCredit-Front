@@ -27,6 +27,7 @@ const envSchema = z.object({
   SMTP_PASS: z.string().optional().default(''),
   MAIL_FROM: z.string().min(1).default('noreply@dcredit.local'),
   SMTP_FROM: z.string().min(1).optional(),
+  APP_API_URL: z.string().url().optional(),
   APP_WEB_URL: z.string().url().default('http://localhost:5173'),
   WEB_URL: z.string().url().optional(),
   JWT_SECRET: z.string().min(16).default('dev-only-change-me-secret'),

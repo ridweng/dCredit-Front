@@ -27,3 +27,10 @@ export function resendVerification(email: string) {
     body: JSON.stringify({ email }),
   });
 }
+
+export function getVerificationStatus(email: string) {
+  return apiRequest<{ verified: boolean }>('/auth/verification-status', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}

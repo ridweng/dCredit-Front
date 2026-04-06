@@ -5,6 +5,7 @@ import { LoginRequestDto } from './dto/login-request.dto';
 import { RegisterRequestDto } from './dto/register-request.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { VerificationStatusDto } from './dto/verification-status.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -32,5 +33,11 @@ export class AuthController {
   @Post('resend-verification')
   resendVerification(@Body() body: ResendVerificationDto) {
     return this.authService.resendVerification(body);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('verification-status')
+  getVerificationStatus(@Body() body: VerificationStatusDto) {
+    return this.authService.getVerificationStatus(body);
   }
 }

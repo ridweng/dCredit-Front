@@ -54,6 +54,27 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
+  async reclaimUnverifiedUser(
+    existingUser: User,
+    input: CreateUserInput,
+  ): Promise<User> {
+    return this.userRepository.manager.transaction(async (manager) => {
+      await manager.getRepository(VerificationToken).delete({ userId: existingUser.id });
+      await manager.getRepository(User).delete(existingUser.id);
+
+      const replacementUser = manager.getRepository(User).create({
+        email: this.normalizeEmail(input.email),
+        passwordHash: input.passwordHash,
+        fullName: input.fullName.trim(),
+        emailVerified: false,
+        isAdmin: input.isAdmin ?? false,
+        preferredLanguage: input.preferredLanguage,
+      });
+
+      return manager.getRepository(User).save(replacementUser);
+    });
+  }
+
   async createVerificationToken(
     input: CreateVerificationTokenInput,
   ): Promise<VerificationToken> {

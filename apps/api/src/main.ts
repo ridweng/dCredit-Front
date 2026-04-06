@@ -12,6 +12,7 @@ async function bootstrap() {
     exclude: [
       { path: 'admin', method: RequestMethod.ALL },
       { path: 'admin/(.*)', method: RequestMethod.ALL },
+      { path: 'verify-email', method: RequestMethod.GET },
     ],
   });
 

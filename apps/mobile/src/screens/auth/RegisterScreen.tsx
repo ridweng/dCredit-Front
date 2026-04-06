@@ -21,7 +21,7 @@ export function RegisterScreen({ navigation }: Props) {
   const mutation = useMutation({
     mutationFn: () => register(email, password, fullName, 'es'),
     onSuccess: () => {
-      navigation.replace('VerificationInfo', { email });
+      navigation.replace('VerificationInfo', { email, password });
     },
     onError: (mutationError: Error) => {
       setError(mutationError.message);
