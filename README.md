@@ -273,3 +273,64 @@ Protected profile:
 curl http://localhost:3001/api/users/me \
   -H "Authorization: Bearer <access-token>"
 ```
+
+---
+
+## Financial API
+
+Protected endpoints for the main dCredit demo features:
+
+- `GET /api/dashboard/summary`
+  - Returns consolidated liquid balance, weekly grouped spending, categorized spending, and monthly credit obligations.
+- `GET /api/dashboard/liquid-balance`
+  - Returns total liquid balance across checking, savings, and wallet accounts with a breakdown by financial source and account.
+- `GET /api/dashboard/weekly-spending`
+  - Returns current-week and previous-week spending totals, grouped by day and category.
+- `GET /api/transactions/categories-summary`
+  - Returns categorized spending totals and percentage share by category.
+- `GET /api/credits`
+  - Returns all credits with interest rate, monthly payment, next payment date, deferred payment date, and high-interest flags.
+- `GET /api/credits/:id`
+  - Returns one credit with installments, financial source metadata, and timeline-ready installment items.
+- `GET /api/credits/timeline`
+  - Returns gantt-ready credit timeline data grouped by credit.
+- `GET /api/financial-sources`
+  - Returns financial sources with status, vault reference placeholder, accounts, liquid balance, and credit counts.
+- `POST /api/financial-sources`
+  - Creates a financial source for the authenticated user. `credentialReference` must be a secure vault reference such as `vault://sources/new-bank/user-123`.
+- `PATCH /api/financial-sources/:id`
+  - Updates the source status, provider metadata, or vault reference placeholder.
+
+### Financial demo data
+
+The demo seed now includes:
+
+- one verified demo user with multiple financial sources
+- multiple liquid accounts across bank and wallet sources
+- multiple credits with different interest rates
+- future installments for timeline and monthly obligation calculations
+- categorized transactions across two weeks for grouped spending and percentage summaries
+
+### Example endpoint checks
+
+```bash
+curl http://localhost:3001/api/dashboard/summary \
+  -H "Authorization: Bearer <access-token>"
+```
+
+```bash
+curl http://localhost:3001/api/credits/timeline \
+  -H "Authorization: Bearer <access-token>"
+```
+
+```bash
+curl -X POST http://localhost:3001/api/financial-sources \
+  -H "Authorization: Bearer <access-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "providerName": "New Payroll Bank",
+    "providerType": "manual",
+    "status": "pending",
+    "credentialReference": "vault://sources/new-payroll-bank/user-123"
+  }'
+```
