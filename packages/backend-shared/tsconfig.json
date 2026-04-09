@@ -18,10 +18,8 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@dcredit/backend-shared": ["../../packages/backend-shared/src/index.ts"],
-      "@dcredit/backend-shared/*": ["../../packages/backend-shared/src/*"],
-      "@dcredit/types": ["../../packages/types/src"],
-      "@dcredit/core": ["../../packages/core/src"]
+      "@dcredit/types": ["../types/src"],
+      "@dcredit/core": ["../core/src"]
     }
   },
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]

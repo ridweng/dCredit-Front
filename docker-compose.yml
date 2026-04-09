@@ -65,7 +65,6 @@ services:
       SMTP_PORT: 1025
       MAIL_FROM: noreply@dcredit.local
       APP_API_URL: http://localhost:3001
-      APP_WEB_URL: http://localhost:5173
       ADMIN_UI_ORIGIN: http://localhost:3002
       JWT_SECRET: dev-only-change-me-secret-was-changed?!
       JWT_EXPIRES_IN: 1h
@@ -76,7 +75,6 @@ services:
         condition: service_healthy
     volumes:
       - ./apps/app-api:/workspace/apps/app-api
-      - ./apps/api:/workspace/apps/api
       - ./apps/admin-api:/workspace/apps/admin-api
       - ./packages:/workspace/packages
       - ./package.json:/workspace/package.json:ro
@@ -124,9 +122,8 @@ services:
       SMTP_PORT: 1025
       MAIL_FROM: noreply@dcredit.local
       APP_API_URL: http://localhost:3002
-      APP_WEB_URL: http://localhost:5173
       ADMIN_UI_ORIGIN: http://localhost:3002
-      CORS_ORIGINS: http://localhost:3002,http://localhost:5173
+      CORS_ORIGINS: http://localhost:3002
       JWT_SECRET: dev-only-change-me-secret-was-changed?!
       JWT_EXPIRES_IN: 1h
     depends_on:
@@ -136,7 +133,6 @@ services:
         condition: service_healthy
     volumes:
       - ./apps/app-api:/workspace/apps/app-api
-      - ./apps/api:/workspace/apps/api
       - ./apps/admin-api:/workspace/apps/admin-api
       - ./packages:/workspace/packages
       - ./package.json:/workspace/package.json:ro

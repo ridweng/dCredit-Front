@@ -1,6 +1,6 @@
 {
   "name": "workspace",
-  "version": "0.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
@@ -8,7 +8,6 @@
     "dev:app-api": "pnpm --filter @dcredit/app-api start:dev",
     "dev:admin-api": "pnpm --filter @dcredit/admin-api start:dev",
     "dev:api": "pnpm run dev:app-api",
-    "dev:web": "pnpm --filter @dcredit/web dev",
     "dev:mobile": "pnpm --filter @dcredit/mobile start",
     "dev:mobile:ios": "pnpm --filter @dcredit/mobile start --clear --localhost --ios",
     "migration:generate": "pnpm --filter @dcredit/backend-shared migration:generate",
@@ -20,10 +19,10 @@
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "ios": "pnpm run dev:mobile:ios",
-    "build": "pnpm run typecheck && pnpm --filter @dcredit/backend-shared build && pnpm --filter @dcredit/app-api build && pnpm --filter @dcredit/admin-api build && pnpm --filter @dcredit/web build",
+    "build": "pnpm run typecheck && pnpm --filter @dcredit/backend-shared build && pnpm --filter @dcredit/app-api build && pnpm --filter @dcredit/admin-api build && pnpm --filter @dcredit/mobile typecheck",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./packages/**\" --filter \"./apps/**\" --filter \"./scripts\" --if-present run typecheck",
-    "verify": "pnpm run typecheck && pnpm --filter @dcredit/backend-shared build && pnpm --filter @dcredit/app-api build && pnpm --filter @dcredit/admin-api build && pnpm --filter @dcredit/web build && pnpm --filter @dcredit/mobile typecheck"
+    "verify": "pnpm run typecheck && pnpm --filter @dcredit/backend-shared build && pnpm --filter @dcredit/app-api build && pnpm --filter @dcredit/admin-api build && pnpm --filter @dcredit/mobile typecheck"
   },
   "private": true,
   "devDependencies": {

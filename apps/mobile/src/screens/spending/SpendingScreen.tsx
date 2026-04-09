@@ -4,7 +4,8 @@ import {
   loadRecentTransactionsUseCase,
   loadWeeklySpendingUseCase,
 } from '@dcredit/client-core';
-import { StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { dashboardApi, transactionsApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { ErrorView } from '@/components/ErrorView';
@@ -13,12 +14,13 @@ import { MetricCard } from '@/components/MetricCard';
 import { SectionCard } from '@/components/SectionCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { formatCurrency, formatDate } from '@/lib/format';
+import { formatCurrency, formatDate, formatDateTime } from '@/lib/format';
 import { colors } from '@/theme/colors';
 
 export function SpendingScreen() {
   const { token } = useAuth();
   const { locale, t } = useLanguage();
+  const [categoryKey, setCategoryKey] = useState('');
 
   const weeklyQuery = useQuery({
     queryKey: ['mobile', 'weekly-spending'],
@@ -33,10 +35,19 @@ export function SpendingScreen() {
   });
 
   const transactionsQuery = useQuery({
-    queryKey: ['mobile', 'spending', 'recent'],
-    queryFn: () => loadRecentTransactionsUseCase(transactionsApi, token!),
+    queryKey: ['mobile', 'spending', 'recent', categoryKey],
+    queryFn: () =>
+      loadRecentTransactionsUseCase(transactionsApi, token!, {
+        limit: 8,
+        categoryKey: categoryKey || undefined,
+      }),
     enabled: Boolean(token),
   });
+
+  const maxDay = useMemo(
+    () => Math.max(...(weeklyQuery.data?.currentWeek.groupedByDay.map((item) => item.total) ?? [1])),
+    [weeklyQuery.data?.currentWeek.groupedByDay],
+  );
 
   if (weeklyQuery.isLoading || categoriesQuery.isLoading || transactionsQuery.isLoading) {
     return <LoadingView />;
@@ -67,14 +78,46 @@ export function SpendingScreen() {
 
       <SectionCard title={t('spending.byDay')}>
         {weeklyQuery.data.currentWeek.groupedByDay.map((day) => (
-          <View key={day.date} style={styles.row}>
-            <Text style={styles.rowTitle}>{formatDate(day.date, locale)}</Text>
-            <Text style={styles.rowValue}>{formatCurrency(day.total, locale)}</Text>
+          <View key={day.date} style={styles.dayCard}>
+            <View style={styles.row}>
+              <Text style={styles.rowTitle}>{formatDate(day.date, locale)}</Text>
+              <Text style={styles.rowValue}>{formatCurrency(day.total, locale)}</Text>
+            </View>
+            <View style={styles.progressTrack}>
+              <View style={[styles.progressValue, { width: `${(day.total / maxDay) * 100}%` }]} />
+            </View>
           </View>
         ))}
       </SectionCard>
 
       <SectionCard title={t('spending.byCategory')}>
+        <Text style={styles.filterLabel}>{t('spending.filterLabel')}</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
+          <Pressable
+            style={[styles.filterChip, categoryKey === '' ? styles.filterChipActive : null]}
+            onPress={() => setCategoryKey('')}
+          >
+            <Text style={[styles.filterChipText, categoryKey === '' ? styles.filterChipTextActive : null]}>
+              {t('spending.filterAll')}
+            </Text>
+          </Pressable>
+          {categoriesQuery.data.categories.map((category) => (
+            <Pressable
+              key={category.categoryKey}
+              style={[styles.filterChip, categoryKey === category.categoryKey ? styles.filterChipActive : null]}
+              onPress={() => setCategoryKey(category.categoryKey)}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  categoryKey === category.categoryKey ? styles.filterChipTextActive : null,
+                ]}
+              >
+                {category.categoryName}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
         {categoriesQuery.data.categories.map((category) => (
           <View key={category.categoryKey} style={styles.categoryCard}>
             <View style={styles.row}>
@@ -92,19 +135,29 @@ export function SpendingScreen() {
       </SectionCard>
 
       <SectionCard title={t('spending.recentTransactions')}>
-        {transactionsQuery.data.transactions.map((transaction) => (
-          <View key={transaction.id} style={styles.row}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>{transaction.description}</Text>
-              <Text style={styles.categoryMeta}>
-                {transaction.category?.name ?? t('common.none')} · {transaction.account.accountName}
-              </Text>
+        {transactionsQuery.data.transactions.length > 0 ? (
+          transactionsQuery.data.transactions.map((transaction) => (
+            <View key={transaction.id} style={styles.transactionCard}>
+              <View style={styles.row}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rowTitle}>{transaction.description}</Text>
+                  <Text style={styles.categoryMeta}>
+                    {transaction.category?.name ?? t('common.none')} · {transaction.account.accountName}
+                  </Text>
+                  <Text style={styles.categoryMeta}>
+                    {transaction.merchant ?? t('common.none')} · {formatDateTime(transaction.createdAt, locale)}
+                  </Text>
+                </View>
+                <Text style={styles.rowValue}>
+                  {formatCurrency(Math.abs(transaction.amount), locale, transaction.account.currency)}
+                </Text>
+              </View>
+              <Text style={styles.dateMeta}>{formatDate(transaction.date, locale)}</Text>
             </View>
-            <Text style={styles.rowValue}>
-              {formatCurrency(Math.abs(transaction.amount), locale, transaction.account.currency)}
-            </Text>
-          </View>
-        ))}
+          ))
+        ) : (
+          <Text style={styles.categoryMeta}>{t('spending.emptyTransactions')}</Text>
+        )}
       </SectionCard>
     </AppScreen>
   );
@@ -122,6 +175,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
+  dayCard: {
+    gap: 8,
+  },
   rowTitle: {
     color: colors.text,
     fontWeight: '700',
@@ -132,6 +188,33 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     gap: 8,
+  },
+  filterLabel: {
+    color: colors.textMuted,
+    fontSize: 13,
+  },
+  filterRow: {
+    gap: 10,
+    paddingBottom: 4,
+  },
+  filterChip: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: colors.surfaceMuted,
+  },
+  filterChipActive: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
+  },
+  filterChipText: {
+    color: colors.text,
+    fontWeight: '600',
+  },
+  filterChipTextActive: {
+    color: colors.primary,
   },
   progressTrack: {
     height: 8,
@@ -146,5 +229,16 @@ const styles = StyleSheet.create({
   categoryMeta: {
     color: colors.textMuted,
     fontSize: 13,
+  },
+  transactionCard: {
+    gap: 8,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+  },
+  dateMeta: {
+    color: colors.textMuted,
+    fontSize: 12,
   },
 });

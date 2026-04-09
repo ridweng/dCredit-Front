@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { SectionCard } from '@/components/SectionCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { formatDateTime } from '@/lib/format';
 import { colors } from '@/theme/colors';
 
 export function ProfileScreen() {
@@ -44,9 +45,17 @@ export function ProfileScreen() {
             {user.emailVerified ? t('profile.verified') : t('profile.unverified')}
           </Text>
         </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>{t('common.date')}</Text>
+          <Text style={styles.value}>{formatDateTime(user.createdAt, locale)}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>{t('profile.updated')}</Text>
+          <Text style={styles.value}>{formatDateTime(user.updatedAt, locale)}</Text>
+        </View>
       </SectionCard>
 
-      <SectionCard title={t('profile.preferredLanguage')} subtitle={t('messages.languageSaved')}>
+      <SectionCard title={t('profile.preferredLanguage')} subtitle={t('profile.tokenStored')}>
         <LanguageToggle />
         <View style={styles.actionRow}>
           <PrimaryButton variant="secondary" onPress={() => updateLanguageMutation.mutate(locale)}>
@@ -56,6 +65,16 @@ export function ProfileScreen() {
             {t('profile.logout')}
           </PrimaryButton>
         </View>
+        {updateLanguageMutation.isSuccess ? (
+          <Text style={styles.feedbackSuccess}>{t('messages.languageSaved')}</Text>
+        ) : null}
+        {updateLanguageMutation.isError ? (
+          <Text style={styles.feedbackError}>
+            {updateLanguageMutation.error instanceof Error
+              ? updateLanguageMutation.error.message
+              : t('messages.genericSaveError')}
+          </Text>
+        ) : null}
       </SectionCard>
     </AppScreen>
   );
@@ -78,5 +97,13 @@ const styles = StyleSheet.create({
   },
   actionRow: {
     gap: 10,
+  },
+  feedbackSuccess: {
+    color: colors.success,
+    fontSize: 13,
+  },
+  feedbackError: {
+    color: colors.danger,
+    fontSize: 13,
   },
 });

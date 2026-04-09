@@ -1,134 +1,41 @@
 # dCredit
 
-> Startup-style fintech MVP monorepo: two NestJS backends, React web, React Native mobile, PostgreSQL, Mailpit, and Docker Compose.
+> Startup-style fintech MVP monorepo: two NestJS backends, one React Native product client, PostgreSQL, Mailpit, and Docker Compose.
 
 ## Architecture
-
-The repo now runs with two separate NestJS services backed by the same PostgreSQL database:
 
 ```text
 apps/
   app-api/     Customer-facing NestJS service
   admin-api/   Internal admin / ops NestJS service
   api/         Shared backend foundation + migration/seed owner
-  web/         Canonical React + Vite frontend
-  mobile/      React Native + Expo frontend
+  mobile/      Canonical React Native + Expo frontend
 packages/
   core/        Shared financial logic
   client-core/ Shared frontend application/use-case layer
   i18n/        Shared EN/ES translation layer
   types/       Shared TypeScript domain + app API contracts
-  ui/          Shared UI package surface
 ```
 
-## Hexagonal architecture
+The product is intentionally mobile-only in this phase:
 
-The repo now applies a practical hexagonal architecture across:
+- `apps/mobile` is the only customer-facing frontend
+- the former browser frontend has been retired
+- email verification lands on a backend-hosted confirmation page, not a browser app
 
-- `apps/app-api`
-- `apps/admin-api`
-- `packages/client-core`
+## Architecture Notes
 
-The rule is consistent:
+- Hexagonal architecture note:
+  - [docs/hexagonal-architecture.md](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/docs/hexagonal-architecture.md)
+- Frontend decision note:
+  - [docs/frontend-architecture.md](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/docs/frontend-architecture.md)
 
-- `domain` contains framework-free rules and models
-- `application` contains use-cases and port interfaces
-- `adapters` contain HTTP, persistence, JWT, bcrypt, SMTP, schema, and rendering concerns
-- `infrastructure` wires concrete implementations
-
-Dependency direction points inward. Business rules do not depend on NestJS, React, React Native, TypeORM, or SMTP clients directly.
-
-Detailed note:
-
-- [docs/hexagonal-architecture.md](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/docs/hexagonal-architecture.md)
-
-Folder shapes:
-
-```text
-apps/app-api/src
-  domain/
-  application/
-    ports/
-    use-cases/
-  adapters/
-    inbound/http/
-    outbound/
-  infrastructure/
-
-apps/admin-api/src
-  domain/
-  application/
-    ports/
-    use-cases/
-  adapters/
-    inbound/http/
-    outbound/
-  infrastructure/
-
-packages/client-core/src
-  domain/
-  application/
-    ports/
-    use-cases/
-  infrastructure/
-```
-
-How to extend it:
-
-- new backend use-case: add port if needed, implement use-case, add adapter, wire it in infrastructure, then expose via a thin controller
-- new outbound adapter: implement the port under `adapters/outbound`, then bind it to the token in the service module
-- new inbound HTTP endpoint: keep validation/mapping in the controller DTO layer, then delegate straight into the use-case
-- new frontend API flow: define or extend the port in `packages/client-core`, add the use-case there, expose the adapter through `createAppApiPorts`, then call it from web/mobile screens
-
-## Frontend architecture decision
-
-The project should remain a dual-frontend setup for now:
-
-- `apps/web` stays the browser product
-- `apps/mobile` stays the Expo / React Native product
-
-The current recommendation is incremental consolidation, not a React Native Web rewrite.
-
-Why:
-
-- the web app is still strongly DOM- and browser-oriented
-- the mobile app is still strongly Expo- and device-oriented
-- the safest shared surface today is contracts, business logic, navigation metadata, and translations
-- a full UI unification now would add migration risk without enough payoff yet
-
-This phase consolidated:
-
-- shared app API contracts in [packages/types](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/types)
-- shared API route helpers in [packages/core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/core)
-- shared frontend use-cases and ports in [packages/client-core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/client-core)
-- shared app section metadata in [packages/core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/core)
-- shared bilingual resources in [packages/i18n](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/i18n)
-
-Platform-specific code remains separate for:
-
-- rendering primitives and styling
-- routing / navigation containers
-- browser storage vs secure device storage
-- web-specific responsive layout and native-specific runtime behavior
-
-Decision note:
-
-- [docs/frontend-architecture.md](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/docs/frontend-architecture.md)
-
-## Why the backend was split
-
-- `app-api` stays focused on product use cases used by customers and the web/mobile apps.
-- `admin-api` stays focused on internal operations: activation funnel, user search, schema visibility, and backend docs.
-- `apps/api` remains the single shared backend foundation so entities, migrations, seed scripts, auth primitives, and business modules are not duplicated.
-
-This keeps the service boundary clear without creating two competing schema or auth implementations.
-
-## Responsibility split
+## Service Responsibilities
 
 `app-api` owns:
 
 - auth endpoints
-- email verification pages and flows
+- backend-hosted email verification confirmation
 - `users/me`
 - dashboard endpoints
 - transactions and category summaries
@@ -147,7 +54,7 @@ This keeps the service boundary clear without creating two competing schema or a
 - admin-only session and admin role enforcement
 - admin Swagger docs
 
-`apps/api` owns:
+`packages/backend-shared` owns:
 
 - shared Nest modules and entities
 - shared config and TypeORM setup
@@ -155,20 +62,51 @@ This keeps the service boundary clear without creating two competing schema or a
 - seed scripts
 - DB reset workflow
 
-## Frontend grouping
+`apps/mobile` owns:
 
-The product UI remains grouped the same way across web and mobile:
+- auth flow
+- verification waiting flow
+- Home
+- Credits
+- Spending
+- Sources
+- Profile
 
-- `Home`: general balance, weekly movement, monthly obligations, next payment
-- `Credits`: rates, monthly payments, payment dates, timeline
-- `Spending`: grouped and categorized outflows
-- `Sources`: connected financial sources and setup
-- `Profile`: identity, language, verification state, logout
+## Product Surface
+
+The mobile app is grouped into five tabs:
+
+- `Home`
+  - liquid balance
+  - weekly spending summary
+  - monthly credit obligations
+  - next payment
+  - recommendation cards
+- `Credits`
+  - credit list
+  - interest rate per credit
+  - upcoming payment dates
+  - selected-credit detail
+  - installment timeline
+- `Spending`
+  - grouped weekly spending
+  - categorized spending totals
+  - category percentages
+  - recent transaction insights
+- `Sources`
+  - connected financial sources
+  - status quick actions
+  - add source form
+  - secure setup explanation
+- `Profile`
+  - user details
+  - language preference
+  - verification state
+  - logout
 
 ## Stack
 
-- Customer web app: React + TypeScript + Vite
-- Mobile app: React Native + TypeScript + Expo
+- Frontend: React Native + TypeScript + Expo
 - Backends: NestJS
 - Database: PostgreSQL
 - Email testing: Mailpit
@@ -176,13 +114,13 @@ The product UI remains grouped the same way across web and mobile:
 - Orchestration: Docker Compose
 - Workspace management: pnpm
 
-## Shared logic
+## Shared Logic
 
 - [packages/core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/core)
   - financial calculations
   - debt prioritization
   - recommendation helpers
-  - shared app section metadata
+  - shared app metadata
   - shared app API route helpers
 - [packages/client-core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/client-core)
   - shared frontend ports
@@ -190,12 +128,10 @@ The product UI remains grouped the same way across web and mobile:
   - shared dashboard / credits / spending / sources loading use-cases
   - shared request adapter composition
 - [packages/i18n](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/i18n)
-  - shared bilingual strings used by web and mobile
+  - shared bilingual strings used by the mobile app
 - [packages/types](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/types)
   - shared domain types
   - shared app-facing API request/response contracts
-- [apps/api](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api)
-  - shared backend modules, entities, config, migrations, seeds
 
 ## Install
 
@@ -209,7 +145,7 @@ Or:
 pnpm install:deps
 ```
 
-## Environment setup
+## Environment Setup
 
 Copy the env examples you need:
 
@@ -217,8 +153,7 @@ Copy the env examples you need:
 cp .env.example .env
 cp apps/app-api/.env.example apps/app-api/.env
 cp apps/admin-api/.env.example apps/admin-api/.env
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env
+cp packages/backend-shared/.env.example packages/backend-shared/.env
 cp apps/mobile/.env.example apps/mobile/.env
 ```
 
@@ -227,11 +162,16 @@ Local defaults:
 - Postgres: `localhost:5433`
 - App API: `http://localhost:3001`
 - Admin API: `http://localhost:3002`
-- Web: `http://localhost:5173`
 - Mailpit UI: `http://localhost:8025`
 - Mailpit SMTP: `localhost:1025`
 
-## Core commands
+For the iOS simulator, keep this in `apps/mobile/.env`:
+
+```bash
+EXPO_PUBLIC_API_URL=http://127.0.0.1:3001
+```
+
+## Core Commands
 
 Infrastructure:
 
@@ -248,26 +188,34 @@ pnpm docker:down
 pnpm docker:logs
 ```
 
-App development:
+Development:
 
 ```bash
 pnpm dev:app-api
 pnpm dev:admin-api
-pnpm dev:web
 pnpm dev:mobile
 pnpm dev:mobile:ios
 pnpm ios
 ```
 
-Recommended local run flows:
-
-Full backend in Docker:
+Database workflow:
 
 ```bash
-docker compose up -d
+pnpm migration:generate
+pnpm migration:run
+pnpm migration:revert
+pnpm seed
+pnpm db:reset
 ```
 
-Frontend + local APIs:
+Verification and static checks:
+
+```bash
+pnpm typecheck
+pnpm verify
+```
+
+## Recommended Local Run Flow
 
 Terminal 1:
 
@@ -284,254 +232,99 @@ pnpm dev:app-api
 Terminal 3:
 
 ```bash
-pnpm dev:admin-api
-```
-
-Terminal 4:
-
-```bash
-pnpm dev:web
-```
-
-iOS simulator:
-
-```bash
 pnpm dev:mobile:ios
 ```
 
-The `dev:mobile:ios` script starts Expo with `--clear --localhost --ios`, which is the most reliable local simulator path in this repo.
-
-Database workflow:
+Optional admin terminal:
 
 ```bash
-pnpm migration:generate --name=DescribeChange
-pnpm migration:run
-pnpm migration:revert
-pnpm seed
-pnpm db:reset
+pnpm dev:admin-api
 ```
 
-Verification:
+## URLs And Tools
 
-```bash
-pnpm typecheck
-pnpm verify
-```
+- App API docs: `http://localhost:3001/api/docs`
+- Admin dashboard: `http://localhost:3002/admin`
+- Admin API docs: `http://localhost:3002/api/docs`
+- Mailpit: `http://localhost:8025`
 
-## Docker Compose services
+## Auth And Verification Flow
 
-`docker-compose.yml` now runs:
+1. Register in the mobile app
+2. The app moves to the verification waiting screen
+3. Open Mailpit and open the verification email
+4. Follow the backend-hosted `/verify-email` link
+5. Return to the app
+6. The waiting screen auto-retries verification and can also be checked manually
+7. Once verified, the user can sign in and enter the app
 
-- `postgres`
-- `mailpit`
-- `app-api`
-- `admin-api`
+If an email already belongs to an unverified account, a new registration reclaims that email and replaces the older unverified account. Verified accounts remain protected and cannot be overwritten by registration.
 
-Ports:
-
-- Postgres: `5433`
-- Mailpit SMTP: `1025`
-- Mailpit UI: `8025`
-- App API: `3001`
-- Admin API: `3002`
-
-Useful checks:
-
-```bash
-docker compose ps
-docker compose logs -f app-api
-docker compose logs -f admin-api
-docker compose logs -f postgres
-docker compose logs -f mailpit
-```
-
-## Migrations and schema ownership
-
-There is one migration workflow for the shared PostgreSQL schema.
-
-Migration owner:
-
-- [apps/api](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api)
-
-Reason:
-
-- `app-api` and `admin-api` both depend on the same schema
-- migrations must stay centralized to avoid conflicting history or duplicate ownership
-- `apps/api` already contains the shared entities and TypeORM metadata used by both services
-
-Workflow:
-
-1. Update shared entities or TypeORM metadata under [apps/api/src](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api/src)
-2. Generate a migration
-3. Review the file under [apps/api/src/database/migrations](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api/src/database/migrations)
-4. Run the migration
-
-Commands:
-
-```bash
-pnpm migration:generate --name=AddSomething
-pnpm migration:run
-pnpm migration:revert
-```
-
-## Seed data
-
-Seeds create deterministic local demo data for:
-
-- verified users
-- unverified users
-- admin user
-- activation journey examples
-- financial sources
-- accounts
-- transactions
-- credits
-- installments
-
-Run:
-
-```bash
-pnpm seed
-```
-
-Reset everything:
-
-```bash
-pnpm db:reset
-```
-
-## Mailpit
-
-Mailpit is the local verification email solution.
-
-- SMTP target: `localhost:1025`
-- Web inbox: `http://localhost:8025`
-
-Typical auth verification flow:
-
-1. Register from web or mobile
-2. Open Mailpit
-3. Open the latest verification email
-4. Follow the verification link
-5. Sign in to the app
-
-## App API
-
-Location:
-
-- [apps/app-api](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/app-api)
-
-Key routes:
-
-- `GET /api/health`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/verify-email`
-- `POST /api/auth/resend-verification`
-- `GET /api/users/me`
-- `PATCH /api/users/me`
-- `GET /api/dashboard/summary`
-- `GET /api/dashboard/liquid-balance`
-- `GET /api/dashboard/weekly-spending`
-- `GET /api/transactions`
-- `GET /api/transactions/categories-summary`
-- `GET /api/credits`
-- `GET /api/credits/:id`
-- `GET /api/credits/timeline`
-- `GET /api/financial-sources`
-- `POST /api/financial-sources`
-- `PATCH /api/financial-sources/:id`
-
-Swagger:
-
-- `http://localhost:3001/api/docs`
-
-## Admin API
-
-Location:
-
-- [apps/admin-api](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/admin-api)
-
-Key routes:
-
-- `GET /health`
-- `GET /admin`
-- `GET /admin/overview`
-- `GET /admin/users`
-- `GET /admin/users/:id`
-- `GET /admin/search`
-- `GET /admin/database`
-- `GET /admin/backend-docs`
-
-Swagger:
-
-- `http://localhost:3002/api/docs`
-
-Admin auth:
-
-- admin access still uses the shared JWT/auth stack
-- only users with `isAdmin = true` can enter the admin dashboard
-- the admin dashboard stores an httpOnly admin session cookie scoped to `/admin`
-
-Local seeded admin:
-
-- email: `admin@dcredit.local`
-- password: `AdminAccess123!`
+## Admin Dashboard
 
 Admin dashboard:
 
 - `http://localhost:3002/admin`
 
-## Web
+## Seeded Local Accounts
 
-Location:
+Verified demo user with seeded financial data:
 
-- [apps/web](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/web)
+- email: `demo@dcredit.local`
+- password: `ChangeMe123!`
 
-Run:
+Unverified demo user:
 
-```bash
-docker compose up -d postgres mailpit
-pnpm dev:app-api
-pnpm dev:web
-```
+- email: `pending@dcredit.local`
+- password: `VerifyMe123!`
 
-Default API URL:
+Seeded local admin credentials:
 
-- `http://localhost:3001`
+- email: `admin@dcredit.local`
+- password: `AdminAccess123!`
 
-## Mobile
+Admin features include:
 
-Location:
+- overview KPIs and activation funnel
+- user list and user detail
+- searcher
+- live schema explorer with table relationships
+- backend docs links
 
-- [apps/mobile](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/mobile)
+## Migrations And Seeds
 
-Run:
+The shared PostgreSQL schema has one migration owner:
 
-```bash
-docker compose up -d postgres mailpit
-pnpm dev:app-api
-pnpm dev:mobile:ios
-```
+- `packages/backend-shared`
 
-Default API URL:
+That package owns:
 
-- `EXPO_PUBLIC_API_URL=http://localhost:3001`
+- TypeORM entities
+- migrations
+- seed scripts
+- DB reset workflow
 
-For real devices, replace `localhost` with your machine LAN IP or tunnel URL.
+This keeps `app-api` and `admin-api` on the same schema without conflicting migration systems.
 
-If you want Expo without opening iOS immediately:
+## Mailpit
 
-```bash
-pnpm dev:mobile
-```
+Mailpit is used for local verification email testing.
 
-## What remains mocked or placeholder
+- SMTP endpoint: `localhost:1025`
+- UI: `http://localhost:8025`
 
-- real banking / open-banking integrations
-- production vault-backed credential storage
-- production email infrastructure
-- full analytics instrumentation for activation
-- production deployment wiring for the two Nest services
+Use it to:
 
-The current repo is an MVP foundation with real backend structure, real auth, real shared schema, and demo financial data.
+- inspect registration verification emails
+- open the backend-hosted verification link
+- validate resend-verification behavior
+
+## Future Integration Placeholders
+
+The current MVP still uses placeholders for future banking integrations:
+
+- financial-source credentials are represented by secure vault references, not real provider credentials
+- source connectivity remains a product-level demo flow
+- transaction and credit data remain seeded/demo-friendly instead of coming from live aggregators
+
+That is intentional for this phase. The core API and product surfaces are in place without introducing real external banking dependencies yet.

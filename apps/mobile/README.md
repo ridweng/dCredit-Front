@@ -1,53 +1,60 @@
 # dCredit Mobile
 
-`apps/mobile` is the Expo + React Native client that mirrors the web product structure.
+`apps/mobile` is the only customer-facing frontend in the repo.
+
+It is an Expo + React Native app that talks to:
+
+- `app-api` for product functionality
+- `admin-api` only indirectly through internal tooling links and docs, not as the main app backend
 
 ## Structure
 
-- `src/navigation`:
+- `src/navigation`
   - auth stack
   - authenticated bottom tabs
-- `src/screens`:
+- `src/screens`
   - `auth`
   - `home`
   - `credits`
   - `spending`
   - `sources`
   - `profile`
-- `src/context`:
+- `src/context`
   - auth session
   - language
-- `src/client`:
-  - shared client-core composition
+- `src/client`
+  - shared `client-core` composition
   - Expo request adapter
-- `src/services/storage`:
+- `src/services/storage`
   - secure token and locale persistence
-- `src/components`:
-  - reusable native cards, buttons, and layout wrappers
+- `src/components`
+  - reusable native cards, buttons, loaders, and layout wrappers
 
-## Shared packages used by mobile
+## Shared Packages Used By Mobile
 
-- `@dcredit/i18n` for bilingual EN/ES strings
-- `@dcredit/core` for shared financial logic where useful
-- `@dcredit/types` for shared domain types where practical
-- `@dcredit/client-core` for shared frontend ports and use-cases
+- `@dcredit/client-core`
+  - shared frontend ports and use-cases
+- `@dcredit/core`
+  - financial calculations and recommendation helpers
+- `@dcredit/types`
+  - shared domain and API contracts
+- `@dcredit/i18n`
+  - shared EN/ES translation resources
 
-## API configuration
+## API Configuration
 
-Set the API origin in `apps/mobile/.env`:
+Set the product API origin in `apps/mobile/.env`:
 
 ```bash
-EXPO_PUBLIC_API_URL=http://localhost:3001
+EXPO_PUBLIC_API_URL=http://127.0.0.1:3001
 ```
 
-Important:
+Notes:
 
-- `localhost` works only in limited local scenarios
-- on a simulator/device you usually need your machine LAN IP, Expo tunnel, or Android `adb reverse`
+- `127.0.0.1` is the safest default for the iOS simulator on the same machine
+- on a real device you usually need your machine LAN IP, Expo tunnel, or another reachable host
 
-## Running outside Replit
-
-Typical local flow:
+## Local Run Flow
 
 Terminal 1:
 
@@ -67,9 +74,13 @@ Terminal 3:
 pnpm dev:mobile:ios
 ```
 
-For a real device or emulator you may additionally need:
+## Auth And Verification
 
-- Expo Go or a development build
-- iOS simulator or Android emulator
-- a reachable API host instead of `localhost`
-- Mailpit running if you want to test register/verification flows
+1. Register from the mobile app
+2. The app moves to the verification waiting screen
+3. Open Mailpit at `http://localhost:8025`
+4. Open the verification email
+5. Follow the backend-hosted `/verify-email` link
+6. Return to the app; it auto-retries verification and can also be checked manually
+
+The email confirmation page is intentionally backend-hosted, so the mobile-only product does not need a browser frontend for verification.

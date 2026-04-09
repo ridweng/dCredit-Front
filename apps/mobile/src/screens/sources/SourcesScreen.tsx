@@ -2,9 +2,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createFinancialSourceUseCase,
   loadFinancialSourcesUseCase,
+  updateFinancialSourceUseCase,
 } from '@dcredit/client-core';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { financialSourcesApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { ErrorView } from '@/components/ErrorView';
@@ -15,6 +16,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency } from '@/lib/format';
 import { colors } from '@/theme/colors';
+
+const statusTypes = ['active', 'pending', 'error', 'disconnected'] as const;
 
 export function SourcesScreen() {
   const { token } = useAuth();
@@ -40,6 +43,18 @@ export function SourcesScreen() {
     onSuccess: () => {
       setProviderName('');
       setMessage(t('messages.sourceCreated'));
+      void queryClient.invalidateQueries({ queryKey: ['mobile', 'sources'] });
+    },
+    onError: (mutationError: Error) => {
+      setMessage(mutationError.message);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, nextStatus }: { id: string; nextStatus: (typeof statusTypes)[number] }) =>
+      updateFinancialSourceUseCase(financialSourcesApi, token!, id, { status: nextStatus }),
+    onSuccess: () => {
+      setMessage(t('messages.sourceUpdated'));
       void queryClient.invalidateQueries({ queryKey: ['mobile', 'sources'] });
     },
     onError: (mutationError: Error) => {
@@ -89,6 +104,28 @@ export function SourcesScreen() {
               </Text>
               <Text style={styles.sourceTitle}>{formatCurrency(source.liquidBalance, locale)}</Text>
             </View>
+            <Text style={styles.quickActionsLabel}>{t('sources.quickActions')}</Text>
+            <View style={styles.statusActions}>
+              {statusTypes.map((nextStatus) => (
+                <Pressable
+                  key={nextStatus}
+                  style={[
+                    styles.statusChip,
+                    source.status === nextStatus ? styles.statusChipActive : null,
+                  ]}
+                  onPress={() => updateMutation.mutate({ id: source.id, nextStatus })}
+                >
+                  <Text
+                    style={[
+                      styles.statusChipText,
+                      source.status === nextStatus ? styles.statusChipTextActive : null,
+                    ]}
+                  >
+                    {t(`sources.status.${nextStatus}`)}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
         ))}
       </SectionCard>
@@ -132,5 +169,35 @@ const styles = StyleSheet.create({
   status: {
     color: colors.primary,
     fontWeight: '700',
+  },
+  quickActionsLabel: {
+    color: colors.text,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  statusActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  statusChip: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  statusChipActive: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
+  },
+  statusChipText: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  statusChipTextActive: {
+    color: colors.primary,
   },
 });

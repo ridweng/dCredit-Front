@@ -1,5 +1,5 @@
 // Pure financial calculation utilities — no UI dependencies.
-// Referenced by apps/web, apps/mobile, and apps/api.
+// Referenced by apps/mobile and the backend services.
 
 /**
  * Monthly free cash flow after expenses and debt obligations.

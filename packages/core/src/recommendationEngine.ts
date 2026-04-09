@@ -1,5 +1,5 @@
 // Shared recommendation engine — no UI dependencies.
-// Used by apps/web, apps/mobile, and apps/api for consistent results.
+// Used by apps/mobile and the backend services for consistent results.
 
 import type {
   DebtProduct,

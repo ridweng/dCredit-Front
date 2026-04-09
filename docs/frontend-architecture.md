@@ -4,48 +4,46 @@ Date: 2026-04-09
 
 ## Decision
 
-Keep `apps/web` and `apps/mobile` as separate frontend apps for now, and continue consolidating shared logic incrementally.
+The product is now mobile-only.
 
-Do not move the product to a unified React Native Web or Expo-for-web architecture in the current phase.
+- `apps/mobile` is the only customer-facing frontend
+- the former browser frontend has been retired and removed
+- there is no React Native Web target in this phase
 
 ## Why
 
-- The current web UI is meaningfully web-specific:
-  - `react-router-dom`
-  - Vite
-  - DOM-first components
-  - utility-class styling and responsive layout tuned for the browser
-- The current mobile UI is meaningfully native-specific:
-  - Expo
-  - React Navigation
-  - native storage and runtime constraints
-  - device-first screen composition
-- The API and product structure are already aligned across both apps, so the safest win is to share contracts and view-model logic, not rewrite the rendering layer.
-- A React Native Web migration now would increase risk around auth flow, responsive polish, Expo stability, and release velocity without reducing enough complexity yet.
+- The Expo / React Native app already covers the product surface and is the safer runtime to keep.
+- The React/Vite browser app duplicated product behavior without providing enough additional value for the current MVP scope.
+- Maintaining one frontend reduces product drift across auth, financial views, translations, and API integration.
+- The backend-hosted verification page already removes the main browser dependency from the sign-up flow.
 
-## What Was Shared In This Phase
+## What Is Shared
 
-- Shared app-facing API contracts now live in `packages/types`
-- Shared API route metadata and request helpers now live in `packages/core`
-- Shared frontend ports and use-cases now live in `packages/client-core`
-- Shared app section metadata now lives in `packages/core`
-- Shared EN/ES resources remain in `packages/i18n`
-- Web and mobile wrappers now consume the same route, contract, and client use-case layer instead of maintaining separate copies
+- `packages/client-core`
+  - frontend ports
+  - shared use-cases
+  - shared API composition
+- `packages/core`
+  - financial calculations
+  - recommendation helpers
+  - shared app metadata
+- `packages/types`
+  - shared app-facing contracts
+  - domain types
+- `packages/i18n`
+  - shared EN/ES strings
 
 ## What Remains Platform-Specific
 
-- UI primitives and screen rendering
-- navigation containers and routing
-- auth/session storage adapters
-- browser-specific layout and native device behavior
-- platform-specific startup/runtime concerns
+- React Native presentation components
+- React Navigation structure
+- Expo runtime and Metro configuration
+- secure device storage
+- simulator / device networking concerns
 
-## Recommended Next Steps
+## Recommended Path Forward
 
-1. Keep `apps/web` and `apps/mobile`
-2. Continue moving duplicated screen state and transformation logic into shared packages
-3. Extract shared feature-level hooks only when they no longer depend on DOM or native-only APIs
-4. Reevaluate React Native Web only after:
-   - the API/view-model layer is mostly shared
-   - web-only UI dependencies are reduced
-   - the product surface is more stable
+1. Keep `apps/mobile` as the single product client
+2. Continue moving non-UI logic into `packages/client-core`, `packages/core`, `packages/types`, and `packages/i18n`
+3. Keep the backend-hosted verification confirmation page as the email landing page
+4. Revisit a browser client only if a concrete product requirement returns
