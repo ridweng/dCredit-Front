@@ -1,13 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
+import { loginWithSessionUseCase } from '@dcredit/client-core';
 import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { authApi, webSessionStoragePort } from '@/client/client-core';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { login } from '@/services/api/auth';
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -19,9 +20,10 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
 
   const loginMutation = useMutation({
-    mutationFn: login,
-    onSuccess: (response) => {
-      persistLogin(response.accessToken, response.user);
+    mutationFn: (input: { email: string; password: string }) =>
+      loginWithSessionUseCase(authApi, webSessionStoragePort, input),
+    onSuccess: (session) => {
+      persistLogin(session.token, session.user);
       const destination = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/';
       navigate(destination, { replace: true });
     },

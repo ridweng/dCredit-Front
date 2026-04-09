@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { loadDashboardSummaryUseCase } from '@dcredit/client-core';
 import { Text, View, StyleSheet } from 'react-native';
+import { dashboardApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { ErrorView } from '@/components/ErrorView';
 import { LoadingView } from '@/components/LoadingView';
@@ -8,7 +10,6 @@ import { SectionCard } from '@/components/SectionCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency, formatDate } from '@/lib/format';
-import { getDashboardSummary } from '@/services/api/dashboard';
 import { colors } from '@/theme/colors';
 
 export function HomeScreen() {
@@ -17,7 +18,7 @@ export function HomeScreen() {
 
   const query = useQuery({
     queryKey: ['mobile', 'dashboard', 'summary'],
-    queryFn: () => getDashboardSummary(token!),
+    queryFn: () => loadDashboardSummaryUseCase(dashboardApi, token!),
     enabled: Boolean(token),
   });
 

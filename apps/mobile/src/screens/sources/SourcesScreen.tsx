@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  createFinancialSourceUseCase,
+  loadFinancialSourcesUseCase,
+} from '@dcredit/client-core';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { financialSourcesApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { ErrorView } from '@/components/ErrorView';
 import { LoadingView } from '@/components/LoadingView';
@@ -9,10 +14,6 @@ import { SectionCard } from '@/components/SectionCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency } from '@/lib/format';
-import {
-  createFinancialSource,
-  getFinancialSources,
-} from '@/services/api/financialSources';
 import { colors } from '@/theme/colors';
 
 export function SourcesScreen() {
@@ -24,13 +25,13 @@ export function SourcesScreen() {
 
   const sourcesQuery = useQuery({
     queryKey: ['mobile', 'sources'],
-    queryFn: () => getFinancialSources(token!),
+    queryFn: () => loadFinancialSourcesUseCase(financialSourcesApi, token!),
     enabled: Boolean(token),
   });
 
   const createMutation = useMutation({
     mutationFn: () =>
-      createFinancialSource(token!, {
+      createFinancialSourceUseCase(financialSourcesApi, token!, {
         providerName,
         providerType: 'manual',
         status: 'pending',

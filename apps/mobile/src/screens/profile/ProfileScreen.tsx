@@ -1,12 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
+import { updateCurrentUserLanguageUseCase } from '@dcredit/client-core';
 import { StyleSheet, Text, View } from 'react-native';
+import { usersApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { SectionCard } from '@/components/SectionCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { updateCurrentUser } from '@/services/api/users';
 import { colors } from '@/theme/colors';
 
 export function ProfileScreen() {
@@ -14,7 +15,8 @@ export function ProfileScreen() {
   const { locale, setLocale, t } = useLanguage();
 
   const updateLanguageMutation = useMutation({
-    mutationFn: (nextLocale: 'en' | 'es') => updateCurrentUser(token!, nextLocale),
+    mutationFn: (nextLocale: 'en' | 'es') =>
+      updateCurrentUserLanguageUseCase(usersApi, token!, nextLocale),
     onSuccess: (response) => {
       updateUser(response);
       setLocale(response.preferredLanguage);

@@ -6,13 +6,9 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { logoutUseCase, restoreSessionUseCase } from '@dcredit/client-core';
 import type { SafeUser } from '@/types/api';
-import {
-  clearStoredToken,
-  getStoredToken,
-  setStoredToken,
-} from '@/services/storage/deviceStorage';
-import { getCurrentUser } from '@/services/api/users';
+import { mobileSessionStoragePort, usersApi } from '@/client/client-core';
 
 interface AuthContextValue {
   user: SafeUser | null;
@@ -35,24 +31,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true;
 
     void (async () => {
-      const storedToken = await getStoredToken();
-
-      if (!storedToken) {
-        if (mounted) {
-          setIsLoading(false);
-        }
-        return;
-      }
-
       try {
-        const currentUser = await getCurrentUser(storedToken);
+        const session = await restoreSessionUseCase(usersApi, mobileSessionStoragePort);
 
         if (mounted) {
-          setToken(storedToken);
-          setUser(currentUser);
+          setToken(session?.token ?? null);
+          setUser(session?.user ?? null);
         }
       } catch {
-        await clearStoredToken();
+        await logoutUseCase(mobileSessionStoragePort);
       } finally {
         if (mounted) {
           setIsLoading(false);
@@ -72,12 +59,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       isAuthenticated: Boolean(user && token),
       login: async (nextToken, nextUser) => {
-        await setStoredToken(nextToken);
+        await mobileSessionStoragePort.setToken(nextToken);
         setToken(nextToken);
         setUser(nextUser);
       },
       logout: async () => {
-        await clearStoredToken();
+        await logoutUseCase(mobileSessionStoragePort);
         setToken(null);
         setUser(null);
       },

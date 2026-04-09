@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
+    "@dcredit/client-core": "workspace:*",
     "@dcredit/core": "workspace:*",
     "@dcredit/i18n": "workspace:*",
     "@dcredit/types": "workspace:*",

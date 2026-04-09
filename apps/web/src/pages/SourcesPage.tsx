@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  createFinancialSourceUseCase,
+  loadFinancialSourcesUseCase,
+  updateFinancialSourceUseCase,
+} from '@dcredit/client-core';
 import { ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import { financialSourcesApi } from '@/client/client-core';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingState } from '@/components/LoadingState';
 import { PageHeader } from '@/components/PageHeader';
@@ -9,18 +15,15 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
+import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency } from '@/lib/utils';
-import {
-  createFinancialSource,
-  getFinancialSources,
-  updateFinancialSource,
-} from '@/services/api/financial-sources';
 
 const providerTypes = ['bank_api', 'manual', 'csv', 'open_banking'] as const;
 const statusTypes = ['active', 'pending', 'error', 'disconnected'] as const;
 
 export function SourcesPage() {
+  const { token } = useAuth();
   const { locale, t } = useLanguage();
   const queryClient = useQueryClient();
   const [providerName, setProviderName] = useState('');
@@ -31,11 +34,17 @@ export function SourcesPage() {
 
   const sourcesQuery = useQuery({
     queryKey: ['financial-sources'],
-    queryFn: getFinancialSources,
+    queryFn: () => loadFinancialSourcesUseCase(financialSourcesApi, token!),
+    enabled: Boolean(token),
   });
 
   const createMutation = useMutation({
-    mutationFn: createFinancialSource,
+    mutationFn: (input: {
+      providerName: string;
+      providerType: (typeof providerTypes)[number];
+      status: (typeof statusTypes)[number];
+      credentialReference: string;
+    }) => createFinancialSourceUseCase(financialSourcesApi, token!, input),
     onSuccess: () => {
       setMessage(t('messages.sourceCreated'));
       setProviderName('');
@@ -48,7 +57,7 @@ export function SourcesPage() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, nextStatus }: { id: string; nextStatus: string }) =>
-      updateFinancialSource(id, { status: nextStatus }),
+      updateFinancialSourceUseCase(financialSourcesApi, token!, id, { status: nextStatus }),
     onSuccess: () => {
       setMessage(t('messages.sourceUpdated'));
       void queryClient.invalidateQueries({ queryKey: ['financial-sources'] });
@@ -175,6 +184,7 @@ export function SourcesPage() {
                           key={nextStatus}
                           variant={source.status === nextStatus ? 'primary' : 'outline'}
                           className="h-9"
+                          type="button"
                           onClick={() =>
                             updateMutation.mutate({
                               id: source.id,

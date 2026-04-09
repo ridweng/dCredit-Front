@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { loadDashboardSummaryUseCase } from '@dcredit/client-core';
 import { AlertCircle, Lightbulb, PiggyBank, Wallet } from 'lucide-react';
+import { dashboardApi } from '@/client/client-core';
 import { ErrorState } from '@/components/ErrorState';
 import { InfoCard } from '@/components/InfoCard';
 import { LoadingState } from '@/components/LoadingState';
@@ -7,15 +9,17 @@ import { PageHeader } from '@/components/PageHeader';
 import { StatCard } from '@/components/StatCard';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency, formatDate, numberDeltaLabel } from '@/lib/utils';
-import { getDashboardSummary } from '@/services/api/dashboard';
 
 export function HomePage() {
+  const { token } = useAuth();
   const { locale, t } = useLanguage();
   const summaryQuery = useQuery({
     queryKey: ['dashboard', 'summary'],
-    queryFn: getDashboardSummary,
+    queryFn: () => loadDashboardSummaryUseCase(dashboardApi, token!),
+    enabled: Boolean(token),
   });
 
   if (summaryQuery.isLoading) {

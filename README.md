@@ -15,10 +15,70 @@ apps/
   mobile/      React Native + Expo frontend
 packages/
   core/        Shared financial logic
+  client-core/ Shared frontend application/use-case layer
   i18n/        Shared EN/ES translation layer
   types/       Shared TypeScript domain + app API contracts
   ui/          Shared UI package surface
 ```
+
+## Hexagonal architecture
+
+The repo now applies a practical hexagonal architecture across:
+
+- `apps/app-api`
+- `apps/admin-api`
+- `packages/client-core`
+
+The rule is consistent:
+
+- `domain` contains framework-free rules and models
+- `application` contains use-cases and port interfaces
+- `adapters` contain HTTP, persistence, JWT, bcrypt, SMTP, schema, and rendering concerns
+- `infrastructure` wires concrete implementations
+
+Dependency direction points inward. Business rules do not depend on NestJS, React, React Native, TypeORM, or SMTP clients directly.
+
+Detailed note:
+
+- [docs/hexagonal-architecture.md](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/docs/hexagonal-architecture.md)
+
+Folder shapes:
+
+```text
+apps/app-api/src
+  domain/
+  application/
+    ports/
+    use-cases/
+  adapters/
+    inbound/http/
+    outbound/
+  infrastructure/
+
+apps/admin-api/src
+  domain/
+  application/
+    ports/
+    use-cases/
+  adapters/
+    inbound/http/
+    outbound/
+  infrastructure/
+
+packages/client-core/src
+  domain/
+  application/
+    ports/
+    use-cases/
+  infrastructure/
+```
+
+How to extend it:
+
+- new backend use-case: add port if needed, implement use-case, add adapter, wire it in infrastructure, then expose via a thin controller
+- new outbound adapter: implement the port under `adapters/outbound`, then bind it to the token in the service module
+- new inbound HTTP endpoint: keep validation/mapping in the controller DTO layer, then delegate straight into the use-case
+- new frontend API flow: define or extend the port in `packages/client-core`, add the use-case there, expose the adapter through `createAppApiPorts`, then call it from web/mobile screens
 
 ## Frontend architecture decision
 
@@ -40,6 +100,7 @@ This phase consolidated:
 
 - shared app API contracts in [packages/types](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/types)
 - shared API route helpers in [packages/core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/core)
+- shared frontend use-cases and ports in [packages/client-core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/client-core)
 - shared app section metadata in [packages/core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/core)
 - shared bilingual resources in [packages/i18n](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/i18n)
 
@@ -123,6 +184,11 @@ The product UI remains grouped the same way across web and mobile:
   - recommendation helpers
   - shared app section metadata
   - shared app API route helpers
+- [packages/client-core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/client-core)
+  - shared frontend ports
+  - shared auth/session use-cases
+  - shared dashboard / credits / spending / sources loading use-cases
+  - shared request adapter composition
 - [packages/i18n](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/i18n)
   - shared bilingual strings used by web and mobile
 - [packages/types](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/types)
@@ -242,6 +308,12 @@ There is one migration workflow for the shared PostgreSQL schema.
 Migration owner:
 
 - [apps/api](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/api)
+
+Reason:
+
+- `app-api` and `admin-api` both depend on the same schema
+- migrations must stay centralized to avoid conflicting history or duplicate ownership
+- `apps/api` already contains the shared entities and TypeORM metadata used by both services
 
 Workflow:
 

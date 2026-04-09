@@ -7,8 +7,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { TOKEN_STORAGE_KEY } from '@/services/api/client';
-import { getCurrentUser } from '@/services/api/users';
+import { logoutUseCase, restoreSessionUseCase } from '@dcredit/client-core';
+import { usersApi, webSessionStoragePort } from '@/client/client-core';
 import type { SafeUser } from '@/types/api';
 
 interface AuthContextValue {
@@ -24,12 +24,12 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => window.localStorage.getItem(TOKEN_STORAGE_KEY));
+  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<SafeUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const logout = useCallback(() => {
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+    void logoutUseCase(webSessionStoragePort);
     setToken(null);
     setUser(null);
   }, []);
@@ -38,18 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let active = true;
 
     async function rehydrateSession() {
-      if (!token) {
-        if (active) {
-          setUser(null);
-          setIsLoading(false);
-        }
-        return;
-      }
-
       try {
-        const currentUser = await getCurrentUser();
+        const session = await restoreSessionUseCase(usersApi, webSessionStoragePort);
         if (active) {
-          setUser(currentUser);
+          setToken(session?.token ?? null);
+          setUser(session?.user ?? null);
         }
       } catch {
         if (active) {
@@ -67,10 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [logout, token]);
+  }, [logout]);
 
   const login = useCallback((nextToken: string, nextUser: SafeUser) => {
-    window.localStorage.setItem(TOKEN_STORAGE_KEY, nextToken);
+    void webSessionStoragePort.setToken(nextToken);
     setToken(nextToken);
     setUser(nextUser);
     setIsLoading(false);

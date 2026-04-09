@@ -1,12 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
+import { registerUseCase } from '@dcredit/client-core';
 import { CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { authApi } from '@/client/client-core';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/context/LanguageContext';
-import { register } from '@/services/api/auth';
 
 export function RegisterPage() {
   const { t } = useLanguage();
@@ -17,7 +18,12 @@ export function RegisterPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const registerMutation = useMutation({
-    mutationFn: register,
+    mutationFn: (input: {
+      email: string;
+      password: string;
+      fullName: string;
+      preferredLanguage: 'es' | 'en';
+    }) => registerUseCase(authApi, input),
     onSuccess: (response) => {
       setSuccessMessage(response.message);
       setError(null);

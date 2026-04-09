@@ -1,11 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
+import { registerUseCase } from '@dcredit/client-core';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { authApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useLanguage } from '@/context/LanguageContext';
-import { register } from '@/services/api/auth';
 import { colors } from '@/theme/colors';
 import type { AuthStackParamList } from '@/navigation/types';
 
@@ -19,7 +20,13 @@ export function RegisterScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: () => register(email, password, fullName, 'es'),
+    mutationFn: () =>
+      registerUseCase(authApi, {
+        email,
+        password,
+        fullName,
+        preferredLanguage: 'es',
+      }),
     onSuccess: () => {
       navigation.replace('VerificationInfo', { email, password });
     },

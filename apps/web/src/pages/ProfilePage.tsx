@@ -1,4 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
+import { updateCurrentUserLanguageUseCase } from '@dcredit/client-core';
+import { usersApi } from '@/client/client-core';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,14 +9,14 @@ import { PageHeader } from '@/components/PageHeader';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatDateTime } from '@/lib/utils';
-import { updateCurrentUser } from '@/services/api/users';
 
 export function ProfilePage() {
-  const { user, logout, updateUser } = useAuth();
+  const { token, user, logout, updateUser } = useAuth();
   const { locale, setLocale, t } = useLanguage();
 
   const updateLanguageMutation = useMutation({
-    mutationFn: updateCurrentUser,
+    mutationFn: (preferredLanguage: 'en' | 'es') =>
+      updateCurrentUserLanguageUseCase(usersApi, token!, preferredLanguage),
     onSuccess: (response) => {
       updateUser(response);
       setLocale(response.preferredLanguage);
@@ -67,7 +69,7 @@ export function ProfilePage() {
               onChange={(event) => {
                 const nextLocale = event.target.value as 'en' | 'es';
                 setLocale(nextLocale);
-                updateLanguageMutation.mutate({ preferredLanguage: nextLocale });
+                updateLanguageMutation.mutate(nextLocale);
               }}
             >
               <option value="en">{t('languages.en')}</option>

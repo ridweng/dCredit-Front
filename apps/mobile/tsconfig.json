@@ -10,6 +10,9 @@
       "@/*": [
         "./src/*"
       ],
+      "@dcredit/client-core": [
+        "../../packages/client-core/src"
+      ],
       "@dcredit/types": [
         "../../packages/types/src"
       ],

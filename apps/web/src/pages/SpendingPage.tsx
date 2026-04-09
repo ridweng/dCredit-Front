@@ -1,37 +1,46 @@
 import { useQuery } from '@tanstack/react-query';
+import {
+  loadCategorySummaryUseCase,
+  loadRecentTransactionsUseCase,
+  loadWeeklySpendingUseCase,
+} from '@dcredit/client-core';
 import { useMemo, useState } from 'react';
+import { dashboardApi, transactionsApi } from '@/client/client-core';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingState } from '@/components/LoadingState';
 import { PageHeader } from '@/components/PageHeader';
 import { StatCard } from '@/components/StatCard';
 import { Card } from '@/components/ui/card';
 import { Select } from '@/components/ui/select';
+import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
-import { getWeeklySpending } from '@/services/api/dashboard';
-import { getCategoriesSummary, getRecentTransactions } from '@/services/api/transactions';
 
 export function SpendingPage() {
+  const { token } = useAuth();
   const { locale, t } = useLanguage();
   const [categoryKey, setCategoryKey] = useState('');
 
   const weeklyQuery = useQuery({
     queryKey: ['dashboard', 'weekly-spending'],
-    queryFn: getWeeklySpending,
+    queryFn: () => loadWeeklySpendingUseCase(dashboardApi, token!),
+    enabled: Boolean(token),
   });
 
   const categoriesQuery = useQuery({
     queryKey: ['transactions', 'categories-summary'],
-    queryFn: getCategoriesSummary,
+    queryFn: () => loadCategorySummaryUseCase(transactionsApi, token!),
+    enabled: Boolean(token),
   });
 
   const recentTransactionsQuery = useQuery({
     queryKey: ['transactions', 'recent', categoryKey],
     queryFn: () =>
-      getRecentTransactions({
+      loadRecentTransactionsUseCase(transactionsApi, token!, {
         limit: 8,
         categoryKey: categoryKey || undefined,
       }),
+    enabled: Boolean(token),
   });
 
   const maxDay = useMemo(() => {

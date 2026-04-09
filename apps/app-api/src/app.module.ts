@@ -1,1 +1,1 @@
-export { AppApiModule as AppModule } from '@dcredit/backend-shared';
+export { AppApiModule as AppModule } from './infrastructure/app-api.module';

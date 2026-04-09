@@ -1,12 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
+import { loginWithSessionUseCase } from '@dcredit/client-core';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { authApi, mobileSessionStoragePort } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { login } from '@/services/api/auth';
 import { colors } from '@/theme/colors';
 import type { AuthStackParamList } from '@/navigation/types';
 
@@ -20,9 +21,10 @@ export function LoginScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: () => login(email, password),
+    mutationFn: () =>
+      loginWithSessionUseCase(authApi, mobileSessionStoragePort, { email, password }),
     onSuccess: async (response) => {
-      await persistLogin(response.accessToken, response.user);
+      await persistLogin(response.token, response.user);
     },
     onError: (mutationError: Error) => {
       setError(mutationError.message);

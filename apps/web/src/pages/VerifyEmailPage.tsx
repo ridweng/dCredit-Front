@@ -1,12 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
+import { resendVerificationUseCase, verifyEmailUseCase } from '@dcredit/client-core';
 import { CheckCircle2, Loader2, RefreshCcw, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { authApi } from '@/client/client-core';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/context/LanguageContext';
-import { resendVerification, verifyEmail } from '@/services/api/auth';
 
 export function VerifyEmailPage() {
   const { t } = useLanguage();
@@ -16,7 +17,7 @@ export function VerifyEmailPage() {
   const [message, setMessage] = useState<string | null>(null);
 
   const verifyMutation = useMutation({
-    mutationFn: verifyEmail,
+    mutationFn: (token: string) => verifyEmailUseCase(authApi, token),
     onSuccess: (response) => {
       setStatus('success');
       setMessage(response.message);
@@ -28,7 +29,7 @@ export function VerifyEmailPage() {
   });
 
   const resendMutation = useMutation({
-    mutationFn: resendVerification,
+    mutationFn: (nextEmail: string) => resendVerificationUseCase(authApi, nextEmail),
     onSuccess: (response) => {
       setMessage(response.message);
     },

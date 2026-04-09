@@ -1,7 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
+import {
+  loadCreditDetailUseCase,
+  loadCreditsUseCase,
+  loadCreditTimelineUseCase,
+} from '@dcredit/client-core';
 import { CreditCard } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { creditsApi } from '@/client/client-core';
 import { CreditTimeline } from '@/components/CreditTimeline';
 import { ErrorState } from '@/components/ErrorState';
 import { LoadingState } from '@/components/LoadingState';
@@ -9,23 +15,26 @@ import { PageHeader } from '@/components/PageHeader';
 import { StatCard } from '@/components/StatCard';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { getCreditDetails, getCredits, getCreditsTimeline } from '@/services/api/credits';
 
 export function CreditsPage() {
   const { creditId } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const { locale, t } = useLanguage();
 
   const creditsQuery = useQuery({
     queryKey: ['credits'],
-    queryFn: getCredits,
+    queryFn: () => loadCreditsUseCase(creditsApi, token!),
+    enabled: Boolean(token),
   });
 
   const timelineQuery = useQuery({
     queryKey: ['credits', 'timeline'],
-    queryFn: getCreditsTimeline,
+    queryFn: () => loadCreditTimelineUseCase(creditsApi, token!),
+    enabled: Boolean(token),
   });
 
   const selectedCreditId = creditId ?? creditsQuery.data?.credits[0]?.id;
@@ -38,8 +47,8 @@ export function CreditsPage() {
 
   const detailQuery = useQuery({
     queryKey: ['credits', selectedCreditId],
-    queryFn: () => getCreditDetails(selectedCreditId!),
-    enabled: Boolean(selectedCreditId),
+    queryFn: () => loadCreditDetailUseCase(creditsApi, token!, selectedCreditId!),
+    enabled: Boolean(selectedCreditId && token),
   });
 
   if (creditsQuery.isLoading || timelineQuery.isLoading) {

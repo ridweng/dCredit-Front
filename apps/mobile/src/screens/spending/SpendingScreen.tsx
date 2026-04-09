@@ -1,5 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
+import {
+  loadCategorySummaryUseCase,
+  loadRecentTransactionsUseCase,
+  loadWeeklySpendingUseCase,
+} from '@dcredit/client-core';
 import { StyleSheet, Text, View } from 'react-native';
+import { dashboardApi, transactionsApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { ErrorView } from '@/components/ErrorView';
 import { LoadingView } from '@/components/LoadingView';
@@ -8,8 +14,6 @@ import { SectionCard } from '@/components/SectionCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency, formatDate } from '@/lib/format';
-import { getWeeklySpending } from '@/services/api/dashboard';
-import { getCategoriesSummary, getRecentTransactions } from '@/services/api/transactions';
 import { colors } from '@/theme/colors';
 
 export function SpendingScreen() {
@@ -18,19 +22,19 @@ export function SpendingScreen() {
 
   const weeklyQuery = useQuery({
     queryKey: ['mobile', 'weekly-spending'],
-    queryFn: () => getWeeklySpending(token!),
+    queryFn: () => loadWeeklySpendingUseCase(dashboardApi, token!),
     enabled: Boolean(token),
   });
 
   const categoriesQuery = useQuery({
     queryKey: ['mobile', 'spending', 'categories'],
-    queryFn: () => getCategoriesSummary(token!),
+    queryFn: () => loadCategorySummaryUseCase(transactionsApi, token!),
     enabled: Boolean(token),
   });
 
   const transactionsQuery = useQuery({
     queryKey: ['mobile', 'spending', 'recent'],
-    queryFn: () => getRecentTransactions(token!),
+    queryFn: () => loadRecentTransactionsUseCase(transactionsApi, token!),
     enabled: Boolean(token),
   });
 

@@ -27,9 +27,10 @@ Do not move the product to a unified React Native Web or Expo-for-web architectu
 
 - Shared app-facing API contracts now live in `packages/types`
 - Shared API route metadata and request helpers now live in `packages/core`
+- Shared frontend ports and use-cases now live in `packages/client-core`
 - Shared app section metadata now lives in `packages/core`
 - Shared EN/ES resources remain in `packages/i18n`
-- Web and mobile wrappers now consume the same route and contract layer instead of maintaining separate copies
+- Web and mobile wrappers now consume the same route, contract, and client use-case layer instead of maintaining separate copies
 
 ## What Remains Platform-Specific
 

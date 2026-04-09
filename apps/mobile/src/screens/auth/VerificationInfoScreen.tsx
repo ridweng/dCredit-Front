@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
+import {
+  getVerificationStatusUseCase,
+  loginWithSessionUseCase,
+  resendVerificationUseCase,
+} from '@dcredit/client-core';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { authApi, mobileSessionStoragePort } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
-import { getVerificationStatus, login, resendVerification } from '@/services/api/auth';
 import { colors } from '@/theme/colors';
 import type { AuthStackParamList } from '@/navigation/types';
 
@@ -36,11 +41,14 @@ export function VerificationInfoScreen({ route, navigation }: Props) {
     setIsChecking(true);
 
     try {
-      const status = await getVerificationStatus(email);
+      const status = await getVerificationStatusUseCase(authApi, email);
 
       if (status.verified) {
-        const response = await login(email, password);
-        await persistLogin(response.accessToken, response.user);
+        const session = await loginWithSessionUseCase(authApi, mobileSessionStoragePort, {
+          email,
+          password,
+        });
+        await persistLogin(session.token, session.user);
         return;
       }
 
@@ -109,7 +117,7 @@ export function VerificationInfoScreen({ route, navigation }: Props) {
         variant="ghost"
         onPress={() => {
           if (email) {
-            void resendVerification(email);
+            void resendVerificationUseCase(authApi, email);
           }
         }}
       >

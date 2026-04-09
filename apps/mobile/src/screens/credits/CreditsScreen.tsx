@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { loadCreditsUseCase, loadCreditTimelineUseCase } from '@dcredit/client-core';
 import { StyleSheet, Text, View } from 'react-native';
+import { creditsApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
 import { ErrorView } from '@/components/ErrorView';
 import { LoadingView } from '@/components/LoadingView';
@@ -8,7 +10,6 @@ import { SectionCard } from '@/components/SectionCard';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { formatCurrency, formatDate } from '@/lib/format';
-import { getCredits, getCreditTimeline } from '@/services/api/credits';
 import { colors } from '@/theme/colors';
 
 export function CreditsScreen() {
@@ -17,13 +18,13 @@ export function CreditsScreen() {
 
   const creditsQuery = useQuery({
     queryKey: ['mobile', 'credits'],
-    queryFn: () => getCredits(token!),
+    queryFn: () => loadCreditsUseCase(creditsApi, token!),
     enabled: Boolean(token),
   });
 
   const timelineQuery = useQuery({
     queryKey: ['mobile', 'credits', 'timeline'],
-    queryFn: () => getCreditTimeline(token!),
+    queryFn: () => loadCreditTimelineUseCase(creditsApi, token!),
     enabled: Boolean(token),
   });
 
