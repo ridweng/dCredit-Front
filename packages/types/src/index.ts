@@ -133,3 +133,5 @@ export interface HealthCheckResponse {
   status: 'ok' | 'error';
   timestamp: string;
 }
+
+export * from './app-api';

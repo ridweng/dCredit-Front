@@ -1,60 +1,18 @@
-import { NestFactory } from '@nestjs/core';
-import { RequestMethod, ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { RequestMethod } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { bootstrapBackendApp } from './bootstrap';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
-
-  app.setGlobalPrefix('api', {
-    exclude: [
-      { path: 'admin', method: RequestMethod.ALL },
-      { path: 'admin/(.*)', method: RequestMethod.ALL },
-      { path: 'verify-email', method: RequestMethod.GET },
-    ],
-  });
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
-
-  app.enableCors({
-    origin: configService.get<string[]>('app.corsOrigins'),
-    credentials: true,
-  });
-
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('dCredit API')
-    .setDescription(
-      'dCredit API for authentication, dashboard, credits, spending, sources, profile, and internal admin operations.',
-    )
-    .setVersion('0.3.0')
-    .addBearerAuth()
-    .build();
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, swaggerDocument, {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  });
-
-  const port = configService.get<number>('app.port', 3001);
-  await app.listen(port);
-
-  console.log(`\n🚀 dCredit API running on: http://localhost:${port}/api`);
-  console.log(`📘 Swagger docs available at: http://localhost:${port}/api/docs`);
-  console.log(
-    `   Environment: ${configService.get<string>('app.nodeEnv', 'development')}\n`,
-  );
-}
-
-bootstrap().catch((error: unknown) => {
-  console.error('Failed to bootstrap dCredit API', error);
+bootstrapBackendApp({
+  rootModule: AppModule,
+  docsTitle: 'dCredit App API',
+  docsDescription:
+    'Customer-facing dCredit API for authentication, profile, dashboard, credits, spending, and financial sources.',
+  docsPath: 'api/docs',
+  globalPrefix: 'api',
+  globalPrefixExclude: [{ path: 'verify-email', method: RequestMethod.GET }],
+  defaultPort: 3001,
+  publicBasePath: '/api',
+}).catch((error: unknown) => {
+  console.error('Failed to bootstrap dCredit shared backend entrypoint', error);
   process.exit(1);
 });

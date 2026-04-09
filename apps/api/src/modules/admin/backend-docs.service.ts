@@ -5,10 +5,13 @@ export class BackendDocsService {
   getDocs() {
     return {
       swaggerUrl: '/api/docs',
+      appApiDocsUrl: 'http://localhost:3001/api/docs',
+      adminApiDocsUrl: 'http://localhost:3002/api/docs',
       modules: [
         {
           name: 'Auth',
-          description: 'Registration, login, email verification, resend verification, and JWT issuance.',
+          description:
+            'Registration, login, email verification, resend verification, and JWT issuance on the customer-facing app-api.',
           endpoints: [
             'POST /api/auth/register',
             'POST /api/auth/login',
@@ -51,7 +54,8 @@ export class BackendDocsService {
         },
         {
           name: 'Admin',
-          description: 'Internal ops metrics, user lookup, user detail inspection, and schema reference.',
+          description:
+            'Internal admin-api surface for ops metrics, user lookup, schema visibility, and backend tooling.',
           endpoints: [
             'GET /admin',
             'GET /admin/overview',
@@ -64,9 +68,10 @@ export class BackendDocsService {
         },
       ],
       notes: [
-        'All /api business endpoints use JWT bearer auth unless they are part of the public auth flow.',
-        'The /admin surface is protected separately by an admin-only JWT cookie derived from the same auth stack.',
-        'Swagger includes the OpenAPI reference for the maintained Nest backend.',
+        'The backend is split into app-api (customer product endpoints) and admin-api (internal operations and admin tooling).',
+        'All app-api business endpoints use JWT bearer auth unless they are part of the public auth flow.',
+        'The /admin surface is protected separately by an admin-only JWT cookie derived from the same auth stack and shared admin flag.',
+        'Swagger is exposed separately on both services: app-api at localhost:3001/api/docs and admin-api at localhost:3002/api/docs in local development.',
       ],
     };
   }

@@ -1,8 +1,9 @@
 import * as SecureStore from 'expo-secure-store';
+import { FRONTEND_STORAGE_KEYS } from '@dcredit/core';
 import type { Locale } from '@dcredit/i18n';
 
-const TOKEN_KEY = 'dcredit_mobile_token';
-const LOCALE_KEY = 'dcredit_mobile_locale';
+const TOKEN_KEY = FRONTEND_STORAGE_KEYS.mobileToken;
+const LOCALE_KEY = FRONTEND_STORAGE_KEYS.mobileLocale;
 
 export async function getStoredToken() {
   return SecureStore.getItemAsync(TOKEN_KEY);

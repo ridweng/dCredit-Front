@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { buildAppApiUrl, extractApiErrorMessage } from '@dcredit/core';
 
 export class ApiError extends Error {
   status: number;
@@ -18,11 +19,6 @@ const API_BASE_URL =
   Constants.expoConfig?.extra?.apiUrl ||
   'http://localhost:3001';
 
-function buildUrl(path: string) {
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-  return `${API_BASE_URL.replace(/\/+$/, '')}/api${normalized}`;
-}
-
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {},
@@ -41,7 +37,7 @@ export async function apiRequest<T>(
   let response: Response;
 
   try {
-    response = await fetch(buildUrl(path), {
+    response = await fetch(buildAppApiUrl(API_BASE_URL, path), {
       ...options,
       headers,
     });
@@ -58,10 +54,7 @@ export async function apiRequest<T>(
     : await response.text();
 
   if (!response.ok) {
-    const message =
-      typeof data === 'object' && data !== null && 'message' in data
-        ? String((data as { message: unknown }).message)
-        : 'Request failed';
+    const message = extractApiErrorMessage(data);
 
     throw new ApiError(message, response.status);
   }

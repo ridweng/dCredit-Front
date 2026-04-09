@@ -5,3 +5,5 @@
 export * from './financialCalculations';
 export * from './recommendationEngine';
 export * from './debtHealthScore';
+export * from './appApi';
+export * from './appSurface';

@@ -28,7 +28,7 @@ services:
     container_name: dcredit-mailpit
     restart: unless-stopped
     ports:
-      - '1025:1025'   # SMTP — configure apps/api SMTP_PORT=1025
+      - '1025:1025'   # SMTP — configure apps/app-api + apps/admin-api SMTP_PORT=1025
       - '8025:8025'   # Web UI — open http://localhost:8025
     environment:
       MP_MAX_MESSAGES: 500
@@ -40,14 +40,14 @@ services:
       retries: 3
 
   # ─────────────────────────────────────────
-  # NestJS API
+  # NestJS App API
   # ─────────────────────────────────────────
-  api:
-    container_name: dcredit-api
+  app-api:
+    container_name: dcredit-app-api
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
-    command: pnpm --filter @dcredit/api start:dev
+      dockerfile: apps/app-api/Dockerfile
+    command: pnpm --filter @dcredit/app-api start:dev
     restart: unless-stopped
     working_dir: /workspace
     ports:
@@ -64,7 +64,9 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       MAIL_FROM: noreply@dcredit.local
+      APP_API_URL: http://localhost:3001
       APP_WEB_URL: http://localhost:5173
+      ADMIN_UI_ORIGIN: http://localhost:3002
       JWT_SECRET: dev-only-change-me-secret-was-changed?!
       JWT_EXPIRES_IN: 1h
     depends_on:
@@ -73,7 +75,9 @@ services:
       mailpit:
         condition: service_healthy
     volumes:
+      - ./apps/app-api:/workspace/apps/app-api
       - ./apps/api:/workspace/apps/api
+      - ./apps/admin-api:/workspace/apps/admin-api
       - ./packages:/workspace/packages
       - ./package.json:/workspace/package.json:ro
       - ./pnpm-lock.yaml:/workspace/pnpm-lock.yaml:ro
@@ -88,6 +92,66 @@ services:
           'node',
           '-e',
           "fetch('http://127.0.0.1:3001/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ─────────────────────────────────────────
+  # NestJS Admin API
+  # ─────────────────────────────────────────
+  admin-api:
+    container_name: dcredit-admin-api
+    build:
+      context: .
+      dockerfile: apps/admin-api/Dockerfile
+    command: pnpm --filter @dcredit/admin-api start:dev
+    restart: unless-stopped
+    working_dir: /workspace
+    ports:
+      - '3002:3002'
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: dcredit
+      DATABASE_USER: dcredit
+      DATABASE_PASSWORD: dcredit_dev_password
+      DATABASE_URL: postgresql://dcredit:dcredit_dev_password@postgres:5432/dcredit
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      MAIL_FROM: noreply@dcredit.local
+      APP_API_URL: http://localhost:3002
+      APP_WEB_URL: http://localhost:5173
+      ADMIN_UI_ORIGIN: http://localhost:3002
+      CORS_ORIGINS: http://localhost:3002,http://localhost:5173
+      JWT_SECRET: dev-only-change-me-secret-was-changed?!
+      JWT_EXPIRES_IN: 1h
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    volumes:
+      - ./apps/app-api:/workspace/apps/app-api
+      - ./apps/api:/workspace/apps/api
+      - ./apps/admin-api:/workspace/apps/admin-api
+      - ./packages:/workspace/packages
+      - ./package.json:/workspace/package.json:ro
+      - ./pnpm-lock.yaml:/workspace/pnpm-lock.yaml:ro
+      - ./pnpm-workspace.yaml:/workspace/pnpm-workspace.yaml:ro
+      - ./tsconfig.base.json:/workspace/tsconfig.base.json:ro
+      - ./tsconfig.json:/workspace/tsconfig.json:ro
+      - /workspace/node_modules
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3002/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))",
         ]
       interval: 15s
       timeout: 5s

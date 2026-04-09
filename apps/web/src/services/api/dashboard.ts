@@ -1,3 +1,4 @@
+import { appApiRoutes } from '@dcredit/core';
 import { apiRequest } from './client';
 import type {
   DashboardSummaryResponse,
@@ -6,13 +7,13 @@ import type {
 } from '@/types/api';
 
 export function getDashboardSummary() {
-  return apiRequest<DashboardSummaryResponse>('/dashboard/summary');
+  return apiRequest<DashboardSummaryResponse>(appApiRoutes.dashboard.summary);
 }
 
 export function getLiquidBalance() {
-  return apiRequest<LiquidBalanceResponse>('/dashboard/liquid-balance');
+  return apiRequest<LiquidBalanceResponse>(appApiRoutes.dashboard.liquidBalance);
 }
 
 export function getWeeklySpending() {
-  return apiRequest<WeeklySpendingResponse>('/dashboard/weekly-spending');
+  return apiRequest<WeeklySpendingResponse>(appApiRoutes.dashboard.weeklySpending);
 }

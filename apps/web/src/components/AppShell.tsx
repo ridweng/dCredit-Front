@@ -1,3 +1,4 @@
+import { APP_SECTIONS, type AppSectionId } from '@dcredit/core';
 import {
   CreditCard,
   Landmark,
@@ -12,13 +13,13 @@ import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { cn } from '@/lib/utils';
 
-const navItems = [
-  { to: '/', key: 'nav.home', icon: LayoutDashboard, end: true },
-  { to: '/credits', key: 'nav.credits', icon: CreditCard },
-  { to: '/spending', key: 'nav.spending', icon: PiggyBank },
-  { to: '/sources', key: 'nav.sources', icon: Landmark },
-  { to: '/profile', key: 'nav.profile', icon: UserCircle2 },
-];
+const navIcons: Record<AppSectionId, typeof LayoutDashboard> = {
+  home: LayoutDashboard,
+  credits: CreditCard,
+  spending: PiggyBank,
+  sources: Landmark,
+  profile: UserCircle2,
+};
 
 export function AppShell() {
   const { logout, user } = useAuth();
@@ -39,11 +40,11 @@ export function AppShell() {
           </div>
 
           <nav className="hidden items-center gap-2 md:flex">
-            {navItems.map((item) => (
+            {APP_SECTIONS.map((item) => (
               <NavLink
-                key={item.to}
-                end={item.end}
-                to={item.to}
+                key={item.id}
+                end={item.webPath === '/'}
+                to={item.webPath}
                 className={({ isActive }) =>
                   cn(
                     'rounded-full px-4 py-2 text-sm font-medium transition',
@@ -53,7 +54,7 @@ export function AppShell() {
                   )
                 }
               >
-                {t(item.key)}
+                {t(item.translationKey)}
               </NavLink>
             ))}
           </nav>
@@ -76,14 +77,14 @@ export function AppShell() {
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 p-2 backdrop-blur md:hidden">
         <div className="grid grid-cols-5 gap-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
+          {APP_SECTIONS.map((item) => {
+            const Icon = navIcons[item.id];
 
             return (
               <NavLink
-                key={item.to}
-                end={item.end}
-                to={item.to}
+                key={item.id}
+                end={item.webPath === '/'}
+                to={item.webPath}
                 className={({ isActive }) =>
                   cn(
                     'flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium',
@@ -92,7 +93,7 @@ export function AppShell() {
                 }
               >
                 <Icon className="h-5 w-5" />
-                <span>{t(item.key)}</span>
+                <span>{t(item.translationKey)}</span>
               </NavLink>
             );
           })}

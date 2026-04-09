@@ -1,3 +1,4 @@
+import { appApiRoutes } from '@dcredit/core';
 import { apiRequest } from './client';
 import type {
   CreditDetailResponse,
@@ -6,13 +7,13 @@ import type {
 } from '@/types/api';
 
 export function getCredits() {
-  return apiRequest<CreditsListResponse>('/credits');
+  return apiRequest<CreditsListResponse>(appApiRoutes.credits.list);
 }
 
 export function getCreditDetails(creditId: string) {
-  return apiRequest<CreditDetailResponse>(`/credits/${creditId}`);
+  return apiRequest<CreditDetailResponse>(appApiRoutes.credits.detail(creditId));
 }
 
 export function getCreditsTimeline() {
-  return apiRequest<CreditTimelineResponse>('/credits/timeline');
+  return apiRequest<CreditTimelineResponse>(appApiRoutes.credits.timeline);
 }

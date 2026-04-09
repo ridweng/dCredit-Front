@@ -1,21 +1,17 @@
+import { appApiRoutes } from '@dcredit/core';
 import { apiRequest } from './client';
-import type { FinancialSourcesResponse } from '@/types/api';
+import type { CreateFinancialSourceInput, FinancialSourcesResponse } from '@/types/api';
 
 export function getFinancialSources(token: string) {
-  return apiRequest<FinancialSourcesResponse>('/financial-sources', {}, token);
+  return apiRequest<FinancialSourcesResponse>(appApiRoutes.financialSources.list, {}, token);
 }
 
 export function createFinancialSource(
   token: string,
-  input: {
-    providerName: string;
-    providerType: string;
-    status: string;
-    credentialReference: string;
-  },
+  input: CreateFinancialSourceInput,
 ) {
   return apiRequest(
-    '/financial-sources',
+    appApiRoutes.financialSources.list,
     {
       method: 'POST',
       body: JSON.stringify(input),

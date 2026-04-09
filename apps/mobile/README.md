@@ -47,7 +47,7 @@ Typical local flow:
 
 ```bash
 pnpm install
-pnpm dev:api
+pnpm dev:app-api
 pnpm --filter @dcredit/mobile start
 ```
 

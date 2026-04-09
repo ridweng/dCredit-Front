@@ -1,3 +1,9 @@
+import {
+  buildAppApiUrl,
+  extractApiErrorMessage,
+  FRONTEND_STORAGE_KEYS,
+} from '@dcredit/core';
+
 export class ApiError extends Error {
   status: number;
   data?: unknown;
@@ -11,12 +17,7 @@ export class ApiError extends Error {
 }
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/+$/, '');
-const TOKEN_STORAGE_KEY = 'dcredit_token';
-
-function buildApiUrl(path: string) {
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-  return API_ORIGIN ? `${API_ORIGIN}/api${normalized}` : `/api${normalized}`;
-}
+const TOKEN_STORAGE_KEY = FRONTEND_STORAGE_KEYS.webToken;
 
 function getStoredToken() {
   return window.localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -41,7 +42,7 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
   let response: Response;
 
   try {
-    response = await fetch(buildApiUrl(path), {
+    response = await fetch(buildAppApiUrl(API_ORIGIN, path), {
       ...options,
       headers,
     });
@@ -58,10 +59,7 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
   const data = isJson ? await response.json() : await response.text();
 
   if (!response.ok) {
-    const message =
-      typeof data === 'object' && data !== null && 'message' in data
-        ? String((data as { message: unknown }).message)
-        : response.statusText || 'Request failed';
+    const message = extractApiErrorMessage(data, response.statusText || 'Request failed');
 
     throw new ApiError(message, response.status, data);
   }

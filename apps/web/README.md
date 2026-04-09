@@ -6,7 +6,7 @@
 
 ```bash
 pnpm install
-pnpm dev:api
+pnpm dev:app-api
 pnpm dev:web
 ```
 

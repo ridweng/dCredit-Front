@@ -1162,8 +1162,12 @@ export class AdminHtmlService {
           <div class="split">
             <article class="card">
               <h2>Backend documentation</h2>
-              <p class="muted">Use the built-in Swagger reference for the full OpenAPI contract.</p>
-              <p><a href="\${data.swaggerUrl}" target="_blank" rel="noreferrer">\${data.swaggerUrl}</a></p>
+              <p class="muted">Use the split Swagger references for the customer-facing app-api and the internal admin-api.</p>
+              <div class="pill-list" style="margin-bottom:12px">
+                <a class="pill" href="\${data.swaggerUrl}" target="_blank" rel="noreferrer">Current service docs</a>
+                <a class="pill" href="\${data.appApiDocsUrl}" target="_blank" rel="noreferrer">App API docs</a>
+                <a class="pill" href="\${data.adminApiDocsUrl}" target="_blank" rel="noreferrer">Admin API docs</a>
+              </div>
               \${data.notes.map((note) => \`<div class="pill" style="margin-bottom:8px">\${escapeHtml(note)}</div>\`).join('')}
             </article>
             <article class="card">

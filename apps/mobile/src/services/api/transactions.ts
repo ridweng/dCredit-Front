@@ -1,3 +1,4 @@
+import { appApiRoutes, buildTransactionsPath } from '@dcredit/core';
 import { apiRequest } from './client';
 import type {
   CategorySummaryResponse,
@@ -5,17 +6,13 @@ import type {
 } from '@/types/api';
 
 export function getCategoriesSummary(token: string) {
-  return apiRequest<CategorySummaryResponse>('/transactions/categories-summary', {}, token);
+  return apiRequest<CategorySummaryResponse>(appApiRoutes.transactions.categoriesSummary, {}, token);
 }
 
 export function getRecentTransactions(token: string, categoryKey?: string) {
-  const params = new URLSearchParams();
-
-  if (categoryKey) {
-    params.set('categoryKey', categoryKey);
-  }
-
-  params.set('limit', '8');
-
-  return apiRequest<RecentTransactionsResponse>(`/transactions?${params.toString()}`, {}, token);
+  return apiRequest<RecentTransactionsResponse>(
+    buildTransactionsPath({ limit: 8, categoryKey }),
+    {},
+    token,
+  );
 }

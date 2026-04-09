@@ -1,7 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { ComponentType } from 'react';
 import { Text } from 'react-native';
+import { APP_SECTIONS } from '@dcredit/core';
 import { LoadingView } from '@/components/LoadingView';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
@@ -18,6 +20,14 @@ import type { AppTabParamList, AuthStackParamList } from './types';
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<AppTabParamList>();
+
+const appTabComponents: Record<keyof AppTabParamList, ComponentType<object>> = {
+  Home: HomeScreen,
+  Credits: CreditsScreen,
+  Spending: SpendingScreen,
+  Sources: SourcesScreen,
+  Profile: ProfileScreen,
+};
 
 function AppTabs() {
   const { t } = useLanguage();
@@ -39,11 +49,14 @@ function AppTabs() {
         },
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: t('nav.home') }} />
-      <Tab.Screen name="Credits" component={CreditsScreen} options={{ title: t('nav.credits') }} />
-      <Tab.Screen name="Spending" component={SpendingScreen} options={{ title: t('nav.spending') }} />
-      <Tab.Screen name="Sources" component={SourcesScreen} options={{ title: t('nav.sources') }} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: t('nav.profile') }} />
+      {APP_SECTIONS.map((section) => (
+        <Tab.Screen
+          key={section.id}
+          name={section.mobileRoute}
+          component={appTabComponents[section.mobileRoute]}
+          options={{ title: t(section.translationKey) }}
+        />
+      ))}
     </Tab.Navigator>
   );
 }

@@ -29,6 +29,7 @@ const envSchema = z.object({
   SMTP_FROM: z.string().min(1).optional(),
   APP_API_URL: z.string().url().optional(),
   APP_WEB_URL: z.string().url().default('http://localhost:5173'),
+  ADMIN_UI_ORIGIN: z.string().url().optional(),
   WEB_URL: z.string().url().optional(),
   JWT_SECRET: z.string().min(16).default('dev-only-change-me-secret'),
   JWT_EXPIRES_IN: z.string().min(1).default('1h'),
