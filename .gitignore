@@ -51,3 +51,5 @@ Thumbs.db
 
 data/db/*
 !data/db/.gitkeep
+
+.env

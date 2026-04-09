@@ -8,9 +8,9 @@
 apps/
   app-api/     Customer-facing NestJS service
   admin-api/   Internal admin / ops NestJS service
-  api/         Shared backend foundation + migration/seed owner
   mobile/      Canonical React Native + Expo frontend
 packages/
+  backend-shared/ Shared NestJS modules + migrations + seeds
   core/        Shared financial logic
   client-core/ Shared frontend application/use-case layer
   i18n/        Shared EN/ES translation layer
@@ -156,6 +156,11 @@ cp apps/admin-api/.env.example apps/admin-api/.env
 cp packages/backend-shared/.env.example packages/backend-shared/.env
 cp apps/mobile/.env.example apps/mobile/.env
 ```
+
+Notes:
+
+- root `.env` is used by Docker Compose
+- app-level `.env` files are used for local non-Docker service startup
 
 Local defaults:
 

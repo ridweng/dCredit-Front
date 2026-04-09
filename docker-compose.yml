@@ -7,15 +7,15 @@ services:
     container_name: dcredit-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: dcredit
-      POSTGRES_USER: dcredit
-      POSTGRES_PASSWORD: dcredit_dev_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - '5433:5432'
+      - '${POSTGRES_PORT}:5432'
     volumes:
       - ./data/db:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U dcredit -d dcredit']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,8 +28,8 @@ services:
     container_name: dcredit-mailpit
     restart: unless-stopped
     ports:
-      - '1025:1025'   # SMTP — configure apps/app-api + apps/admin-api SMTP_PORT=1025
-      - '8025:8025'   # Web UI — open http://localhost:8025
+      - '${MAILPIT_SMTP_PORT}:1025'   # SMTP — configure apps/app-api + apps/admin-api SMTP_PORT=1025
+      - '${MAILPIT_UI_PORT}:8025'     # Web UI — open http://localhost:${MAILPIT_UI_PORT}
     environment:
       MP_MAX_MESSAGES: 500
       MP_SMTP_AUTH_ALLOW_INSECURE: true
@@ -51,23 +51,22 @@ services:
     restart: unless-stopped
     working_dir: /workspace
     ports:
-      - '3001:3001'
+      - '${APP_API_PORT}:3001'
     environment:
-      NODE_ENV: development
-      PORT: 3001
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${APP_API_PORT}
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_NAME: dcredit
-      DATABASE_USER: dcredit
-      DATABASE_PASSWORD: dcredit_dev_password
-      DATABASE_URL: postgresql://dcredit:dcredit_dev_password@postgres:5432/dcredit
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
-      MAIL_FROM: noreply@dcredit.local
-      APP_API_URL: http://localhost:3001
-      ADMIN_UI_ORIGIN: http://localhost:3002
-      JWT_SECRET: dev-only-change-me-secret-was-changed?!
-      JWT_EXPIRES_IN: 1h
+      MAIL_FROM: ${MAIL_FROM}
+      APP_API_URL: http://localhost:${APP_API_PORT}
+      ADMIN_UI_ORIGIN: http://localhost:${ADMIN_API_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
     depends_on:
       postgres:
         condition: service_healthy
@@ -108,24 +107,23 @@ services:
     restart: unless-stopped
     working_dir: /workspace
     ports:
-      - '3002:3002'
+      - '${ADMIN_API_PORT}:3002'
     environment:
-      NODE_ENV: development
-      PORT: 3002
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${ADMIN_API_PORT}
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_NAME: dcredit
-      DATABASE_USER: dcredit
-      DATABASE_PASSWORD: dcredit_dev_password
-      DATABASE_URL: postgresql://dcredit:dcredit_dev_password@postgres:5432/dcredit
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
-      MAIL_FROM: noreply@dcredit.local
-      APP_API_URL: http://localhost:3002
-      ADMIN_UI_ORIGIN: http://localhost:3002
-      CORS_ORIGINS: http://localhost:3002
-      JWT_SECRET: dev-only-change-me-secret-was-changed?!
-      JWT_EXPIRES_IN: 1h
+      MAIL_FROM: ${MAIL_FROM}
+      APP_API_URL: http://localhost:${ADMIN_API_PORT}
+      ADMIN_UI_ORIGIN: http://localhost:${ADMIN_API_PORT}
+      CORS_ORIGINS: http://localhost:${ADMIN_API_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
     depends_on:
       postgres:
         condition: service_healthy
