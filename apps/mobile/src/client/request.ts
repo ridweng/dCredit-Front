@@ -11,9 +11,8 @@ export class ApiError extends Error {
   }
 }
 
-// Note:
-// `localhost` usually does not work on a physical device and may not work on every emulator.
-// For real native testing, point this to your machine LAN IP, use Expo tunnel, or Android reverse proxying.
+// `localhost` usually does not work on a physical device.
+// For real native testing, point EXPO_PUBLIC_API_URL to your machine LAN IP or tunnel URL.
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ||
   Constants.expoConfig?.extra?.apiUrl ||
@@ -55,7 +54,6 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     const message = extractApiErrorMessage(data);
-
     throw new ApiError(message, response.status);
   }
 

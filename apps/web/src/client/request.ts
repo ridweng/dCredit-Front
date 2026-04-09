@@ -17,7 +17,7 @@ export class ApiError extends Error {
 }
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/+$/, '');
-const TOKEN_STORAGE_KEY = FRONTEND_STORAGE_KEYS.webToken;
+export const TOKEN_STORAGE_KEY = FRONTEND_STORAGE_KEYS.webToken;
 
 function getStoredToken() {
   return window.localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -66,5 +66,3 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
 
   return data as T;
 }
-
-export { TOKEN_STORAGE_KEY };

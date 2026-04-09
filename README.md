@@ -255,7 +255,51 @@ pnpm dev:app-api
 pnpm dev:admin-api
 pnpm dev:web
 pnpm dev:mobile
+pnpm dev:mobile:ios
+pnpm ios
 ```
+
+Recommended local run flows:
+
+Full backend in Docker:
+
+```bash
+docker compose up -d
+```
+
+Frontend + local APIs:
+
+Terminal 1:
+
+```bash
+docker compose up -d postgres mailpit
+```
+
+Terminal 2:
+
+```bash
+pnpm dev:app-api
+```
+
+Terminal 3:
+
+```bash
+pnpm dev:admin-api
+```
+
+Terminal 4:
+
+```bash
+pnpm dev:web
+```
+
+iOS simulator:
+
+```bash
+pnpm dev:mobile:ios
+```
+
+The `dev:mobile:ios` script starts Expo with `--clear --localhost --ios`, which is the most reliable local simulator path in this repo.
 
 Database workflow:
 
@@ -447,6 +491,7 @@ Location:
 Run:
 
 ```bash
+docker compose up -d postgres mailpit
 pnpm dev:app-api
 pnpm dev:web
 ```
@@ -464,8 +509,9 @@ Location:
 Run:
 
 ```bash
+docker compose up -d postgres mailpit
 pnpm dev:app-api
-pnpm dev:mobile
+pnpm dev:mobile:ios
 ```
 
 Default API URL:
@@ -473,6 +519,12 @@ Default API URL:
 - `EXPO_PUBLIC_API_URL=http://localhost:3001`
 
 For real devices, replace `localhost` with your machine LAN IP or tunnel URL.
+
+If you want Expo without opening iOS immediately:
+
+```bash
+pnpm dev:mobile
+```
 
 ## What remains mocked or placeholder
 

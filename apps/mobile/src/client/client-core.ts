@@ -3,7 +3,7 @@ import {
   type RequestAdapter,
   type SessionStoragePort,
 } from '@dcredit/client-core';
-import { apiRequest } from '@/services/api/client';
+import { apiRequest } from './request';
 import {
   clearStoredToken,
   getStoredToken,

@@ -17,8 +17,11 @@
 - `src/context`:
   - auth session
   - language
-- `src/services/api`:
-  - NestJS API client and endpoint modules
+- `src/client`:
+  - shared client-core composition
+  - Expo request adapter
+- `src/services/storage`:
+  - secure token and locale persistence
 - `src/components`:
   - reusable native cards, buttons, and layout wrappers
 
@@ -27,6 +30,7 @@
 - `@dcredit/i18n` for bilingual EN/ES strings
 - `@dcredit/core` for shared financial logic where useful
 - `@dcredit/types` for shared domain types where practical
+- `@dcredit/client-core` for shared frontend ports and use-cases
 
 ## API configuration
 
@@ -45,10 +49,22 @@ Important:
 
 Typical local flow:
 
+Terminal 1:
+
 ```bash
-pnpm install
+docker compose up -d postgres mailpit
+```
+
+Terminal 2:
+
+```bash
 pnpm dev:app-api
-pnpm --filter @dcredit/mobile start
+```
+
+Terminal 3:
+
+```bash
+pnpm dev:mobile:ios
 ```
 
 For a real device or emulator you may additionally need:

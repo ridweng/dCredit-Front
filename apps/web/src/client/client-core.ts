@@ -3,7 +3,7 @@ import {
   type RequestAdapter,
   type SessionStoragePort,
 } from '@dcredit/client-core';
-import { apiRequest, TOKEN_STORAGE_KEY } from '@/services/api/client';
+import { apiRequest, TOKEN_STORAGE_KEY } from './request';
 
 const requestAdapter: RequestAdapter = {
   request<T>(path: string, options: RequestInit & { token?: string | null } = {}) {
