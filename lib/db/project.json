@@ -1,0 +1,38 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "db",
+  "projectType": "library",
+  "root": "lib/db",
+  "sourceRoot": "lib/db/src",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/lib/db/dist"],
+      "options": {
+        "cwd": "lib/db",
+        "command": "tsc --build"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "lib/db",
+        "command": "tsc --noEmit -p tsconfig.json"
+      }
+    },
+    "push": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "lib/db",
+        "command": "pnpm push"
+      }
+    },
+    "push-force": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "lib/db",
+        "command": "pnpm push-force"
+      }
+    }
+  }
+}

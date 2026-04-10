@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { loadDashboardSummaryUseCase } from '@dcredit/client-core';
+import { loadDashboardSummaryUseCase } from '@/client-core';
 import { Text, View, StyleSheet } from 'react-native';
 import { dashboardApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';

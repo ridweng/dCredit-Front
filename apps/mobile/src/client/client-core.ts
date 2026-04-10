@@ -2,7 +2,7 @@ import {
   createAppApiPorts,
   type RequestAdapter,
   type SessionStoragePort,
-} from '@dcredit/client-core';
+} from '@/client-core';
 import { apiRequest } from './request';
 import {
   clearStoredToken,

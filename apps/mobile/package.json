@@ -11,9 +11,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
-    "@dcredit/client-core": "workspace:*",
     "@dcredit/core": "workspace:*",
-    "@dcredit/i18n": "workspace:*",
     "@dcredit/types": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "@react-navigation/bottom-tabs": "^6.5.0",

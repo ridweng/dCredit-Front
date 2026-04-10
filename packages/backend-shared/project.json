@@ -1,0 +1,67 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "backend-shared",
+  "projectType": "library",
+  "root": "packages/backend-shared",
+  "sourceRoot": "packages/backend-shared/src",
+  "implicitDependencies": ["core", "types"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/packages/backend-shared/dist"],
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm build"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm typecheck"
+      }
+    },
+    "migration-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm migration:generate"
+      }
+    },
+    "migration-run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm migration:run"
+      }
+    },
+    "migration-revert": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm migration:revert"
+      }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm seed"
+      }
+    },
+    "db-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm db:reset"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/backend-shared",
+        "command": "pnpm test"
+      }
+    }
+  }
+}

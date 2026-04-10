@@ -19,10 +19,6 @@ The product is now mobile-only.
 
 ## What Is Shared
 
-- `packages/client-core`
-  - frontend ports
-  - shared use-cases
-  - shared API composition
 - `packages/core`
   - financial calculations
   - recommendation helpers
@@ -30,8 +26,15 @@ The product is now mobile-only.
 - `packages/types`
   - shared app-facing contracts
   - domain types
-- `packages/i18n`
-  - shared EN/ES strings
+
+## What Lives In Mobile
+
+- `apps/mobile/src/client-core`
+  - frontend ports
+  - shared use-cases for the mobile app
+  - API composition used by the React Native presentation layer
+- `apps/mobile/src/i18n`
+  - EN/ES strings owned by the mobile app
 
 ## What Remains Platform-Specific
 
@@ -44,6 +47,7 @@ The product is now mobile-only.
 ## Recommended Path Forward
 
 1. Keep `apps/mobile` as the single product client
-2. Continue moving non-UI logic into `packages/client-core`, `packages/core`, `packages/types`, and `packages/i18n`
-3. Keep the backend-hosted verification confirmation page as the email landing page
-4. Revisit a browser client only if a concrete product requirement returns
+2. Keep only truly cross-service code in `packages/`
+3. Keep mobile-only client logic under `apps/mobile/src`
+4. Keep the backend-hosted verification confirmation page as the email landing page
+5. Revisit a browser client only if a concrete product requirement returns

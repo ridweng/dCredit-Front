@@ -1,4 +1,4 @@
-import type { Locale } from '@dcredit/i18n';
+import type { Locale } from '@/i18n';
 
 export function formatCurrency(value: number, locale: Locale, currency = 'USD') {
   const intlLocale = locale === 'es' ? 'es-ES' : 'en-US';

@@ -1,0 +1,39 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "app-api",
+  "projectType": "application",
+  "root": "apps/app-api",
+  "sourceRoot": "apps/app-api/src",
+  "implicitDependencies": ["backend-shared", "core", "types"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/apps/app-api/dist"],
+      "options": {
+        "cwd": "apps/app-api",
+        "command": "pnpm build"
+      }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/app-api",
+        "command": "pnpm start:dev"
+      }
+    },
+    "start-prod": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/app-api",
+        "command": "pnpm start:prod"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/app-api",
+        "command": "pnpm typecheck"
+      }
+    }
+  }
+}

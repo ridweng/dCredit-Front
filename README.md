@@ -1,6 +1,6 @@
 # dCredit
 
-> Startup-style fintech MVP monorepo: two NestJS backends, one React Native product client, PostgreSQL, Mailpit, and Docker Compose.
+> Startup-style fintech MVP monorepo: two NestJS backends, one React Native product client, PostgreSQL, Mailpit, Docker Compose, pnpm, and Nx.
 
 ## Architecture
 
@@ -12,10 +12,16 @@ apps/
 packages/
   backend-shared/ Shared NestJS modules + migrations + seeds
   core/        Shared financial logic
-  client-core/ Shared frontend application/use-case layer
-  i18n/        Shared EN/ES translation layer
   types/       Shared TypeScript domain + app API contracts
 ```
+
+`packages/` remains on purpose. Only code used by more than one runtime stays there:
+
+- `backend-shared` is used by both Nest services
+- `core` is used by mobile plus backend/shared modules
+- `types` is used by mobile plus both Nest services
+
+Mobile-only frontend logic was moved back into `apps/mobile/src`.
 
 The product is intentionally mobile-only in this phase:
 
@@ -112,7 +118,7 @@ The mobile app is grouped into five tabs:
 - Email testing: Mailpit
 - Migrations: TypeORM
 - Orchestration: Docker Compose
-- Workspace management: pnpm
+- Workspace management: pnpm + Nx
 
 ## Shared Logic
 
@@ -122,16 +128,15 @@ The mobile app is grouped into five tabs:
   - recommendation helpers
   - shared app metadata
   - shared app API route helpers
-- [packages/client-core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/client-core)
-  - shared frontend ports
-  - shared auth/session use-cases
-  - shared dashboard / credits / spending / sources loading use-cases
-  - shared request adapter composition
-- [packages/i18n](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/i18n)
-  - shared bilingual strings used by the mobile app
 - [packages/types](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/packages/types)
   - shared domain types
   - shared app-facing API request/response contracts
+- [apps/mobile/src/client-core](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/mobile/src/client-core)
+  - mobile-local frontend ports
+  - mobile-local auth/session use-cases
+  - mobile-local dashboard / credits / spending / sources loading use-cases
+- [apps/mobile/src/i18n](/Users/ignaciokaiser/Desktop/mines/dCredit-Front/apps/mobile/src/i18n)
+  - mobile-local bilingual strings used by the app
 
 ## Install
 
@@ -144,6 +149,12 @@ Or:
 ```bash
 pnpm install:deps
 ```
+
+Recommended local runtime:
+
+- Node 22 LTS
+
+The root scripts run Nx with `NX_DAEMON=false` by default because this repo has already hit local socket-permission issues on some machines.
 
 ## Environment Setup
 
@@ -191,6 +202,15 @@ Repo shortcuts:
 pnpm docker:up
 pnpm docker:down
 pnpm docker:logs
+```
+
+Nx workspace commands:
+
+```bash
+pnpm nx:projects
+pnpm nx:graph
+pnpm nx -- run app-api:build
+pnpm nx -- run-many -t typecheck --projects=app-api,admin-api,mobile
 ```
 
 Development:
@@ -310,6 +330,14 @@ That package owns:
 - DB reset workflow
 
 This keeps `app-api` and `admin-api` on the same schema without conflicting migration systems.
+
+Nx does not change migration ownership. It only orchestrates the existing targets:
+
+- `pnpm migration:generate`
+- `pnpm migration:run`
+- `pnpm migration:revert`
+- `pnpm seed`
+- `pnpm db:reset`
 
 ## Mailpit
 

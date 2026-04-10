@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { logoutUseCase, restoreSessionUseCase } from '@dcredit/client-core';
+import { logoutUseCase, restoreSessionUseCase } from '@/client-core';
 import type { SafeUser } from '@/types/api';
 import { mobileSessionStoragePort, usersApi } from '@/client/client-core';
 

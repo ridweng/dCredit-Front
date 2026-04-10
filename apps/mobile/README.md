@@ -23,8 +23,12 @@ It is an Expo + React Native app that talks to:
   - auth session
   - language
 - `src/client`
-  - shared `client-core` composition
+  - request adapter and API composition
   - Expo request adapter
+- `src/client-core`
+  - mobile-local frontend ports and use-cases
+- `src/i18n`
+  - mobile-local EN/ES translations
 - `src/services/storage`
   - secure token and locale persistence
 - `src/components`
@@ -32,14 +36,10 @@ It is an Expo + React Native app that talks to:
 
 ## Shared Packages Used By Mobile
 
-- `@dcredit/client-core`
-  - shared frontend ports and use-cases
 - `@dcredit/core`
   - financial calculations and recommendation helpers
 - `@dcredit/types`
   - shared domain and API contracts
-- `@dcredit/i18n`
-  - shared EN/ES translation resources
 
 ## API Configuration
 

@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import { FRONTEND_STORAGE_KEYS } from '@dcredit/core';
-import type { Locale } from '@dcredit/i18n';
+import type { Locale } from '@/i18n';
 
 const TOKEN_KEY = FRONTEND_STORAGE_KEYS.mobileToken;
 const LOCALE_KEY = FRONTEND_STORAGE_KEYS.mobileLocale;

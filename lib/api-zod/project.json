@@ -1,0 +1,24 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "api-zod",
+  "projectType": "library",
+  "root": "lib/api-zod",
+  "sourceRoot": "lib/api-zod/src",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/lib/api-zod/dist"],
+      "options": {
+        "cwd": "lib/api-zod",
+        "command": "tsc --build"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "lib/api-zod",
+        "command": "tsc --noEmit -p tsconfig.json"
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { type Locale, translateWeb } from '@dcredit/i18n';
+import { type Locale, translateWeb } from '@/i18n';
 import { getStoredLocale, setStoredLocale } from '@/services/storage/deviceStorage';
 
 interface LanguageContextValue {

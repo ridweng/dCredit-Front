@@ -3,7 +3,7 @@ import {
   createFinancialSourceUseCase,
   loadFinancialSourcesUseCase,
   updateFinancialSourceUseCase,
-} from '@dcredit/client-core';
+} from '@/client-core';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { financialSourcesApi } from '@/client/client-core';

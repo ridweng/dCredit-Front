@@ -3,7 +3,7 @@ import {
   getVerificationStatusUseCase,
   loginWithSessionUseCase,
   resendVerificationUseCase,
-} from '@dcredit/client-core';
+} from '@/client-core';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { authApi, mobileSessionStoragePort } from '@/client/client-core';

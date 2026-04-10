@@ -3,7 +3,7 @@ import {
   loadCreditDetailUseCase,
   loadCreditsUseCase,
   loadCreditTimelineUseCase,
-} from '@dcredit/client-core';
+} from '@/client-core';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { creditsApi } from '@/client/client-core';

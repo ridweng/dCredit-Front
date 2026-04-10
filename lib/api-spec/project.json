@@ -1,0 +1,16 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "api-spec",
+  "projectType": "library",
+  "root": "lib/api-spec",
+  "sourceRoot": "lib/api-spec",
+  "targets": {
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "lib/api-spec",
+        "command": "pnpm codegen"
+      }
+    }
+  }
+}

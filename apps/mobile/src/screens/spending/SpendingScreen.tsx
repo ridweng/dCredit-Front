@@ -3,7 +3,7 @@ import {
   loadCategorySummaryUseCase,
   loadRecentTransactionsUseCase,
   loadWeeklySpendingUseCase,
-} from '@dcredit/client-core';
+} from '@/client-core';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { dashboardApi, transactionsApi } from '@/client/client-core';

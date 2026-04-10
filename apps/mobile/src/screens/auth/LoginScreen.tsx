@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { loginWithSessionUseCase } from '@dcredit/client-core';
+import { loginWithSessionUseCase } from '@/client-core';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';

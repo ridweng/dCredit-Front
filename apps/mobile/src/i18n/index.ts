@@ -1,5 +1,5 @@
-// @dcredit/i18n — shared bilingual (EN/ES) string dictionaries
-// No UI framework dependencies — safe for React, React Native, and Node.js.
+// Mobile-local bilingual (EN/ES) string dictionaries.
+// No UI framework dependencies — safe across the app's client-side layers.
 
 export type Locale = 'en' | 'es';
 

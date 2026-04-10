@@ -19,7 +19,7 @@ Hexagonal architecture is applied across:
 
 - `apps/app-api`
 - `apps/admin-api`
-- `packages/client-core`
+- `apps/mobile/src/client-core`
 
 ## `app-api`
 
@@ -74,9 +74,9 @@ In practice:
 - `adapters/outbound` reads from Postgres-backed services and schema/docs adapters
 - `infrastructure` wires admin auth/session and Nest composition
 
-## `client-core`
+## Mobile Client Core
 
-`packages/client-core` uses a frontend-adapted hexagonal structure for the single mobile client.
+`apps/mobile/src/client-core` uses a frontend-adapted hexagonal structure for the single mobile client.
 
 ```text
 src/
@@ -95,7 +95,7 @@ In practice:
 - `application/ports` defines API and storage ports
 - `application/use-cases` owns flows like login, register, restore session, dashboard loading, credits loading, spending loading, and sources loading
 - `infrastructure/api` builds concrete API adapters from a request adapter
-- `apps/mobile` is the presentation adapter on top of `client-core`
+- `apps/mobile` is the presentation adapter on top of this client core
 
 ## Dependency Direction
 
@@ -151,8 +151,8 @@ For `app-api` or `admin-api`:
 
 ## Adding A New Mobile API Flow
 
-1. Add or extend the port in `packages/client-core/src/application/ports`
-2. Add the use-case in `packages/client-core/src/application/use-cases`
+1. Add or extend the port in `apps/mobile/src/client-core/application/ports`
+2. Add the use-case in `apps/mobile/src/client-core/application/use-cases`
 3. Extend `createAppApiPorts` if the flow is `app-api` backed
 4. Reuse the shared use-case from `apps/mobile`
 5. Keep React Native screens focused on presentation, loading, and error states

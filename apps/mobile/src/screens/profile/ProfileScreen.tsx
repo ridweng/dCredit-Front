@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { updateCurrentUserLanguageUseCase } from '@dcredit/client-core';
+import { updateCurrentUserLanguageUseCase } from '@/client-core';
 import { StyleSheet, Text, View } from 'react-native';
 import { usersApi } from '@/client/client-core';
 import { AppScreen } from '@/components/AppScreen';
